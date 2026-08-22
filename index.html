@@ -167,10 +167,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// SEMUA MODUL MENGGUNAKAN RENTANG 0 - 100
 const modules = [
   {
     id:"ppk", label:"A", title:"Pelaporan Implementasi Penguatan Pendidikan Karakter melalui Pembiasaan di Satuan Pendidikan",
-    pctLabel:"Prosentase", pctMin:60, pctMax:100, color:"#D4A017", icon:"fa-heart",
+    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#D4A017", icon:"fa-heart",
     driveNote:"Indikator 1 s/d 21 berisi foto-foto dibuat 1 folder dan simpan di Google Drive sekolah share linknya dan simpan di kolom link di bawah!",
     indicators:[
       {title:"Siswa melaksanakan pembiasaan bangun pagi",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan bangun pagi",doc:""},
@@ -198,7 +199,7 @@ const modules = [
   },
   {
     id:"digital", label:"B", title:"Pelaporan Digitalisasi Pembelajaran di Satuan Pendidikan",
-    pctLabel:"Prosentase", pctMin:80, pctMax:100, color:"#14B8A6", icon:"fa-laptop",
+    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#14B8A6", icon:"fa-laptop",
     driveNote:"Indicator 1-11 dibuat folder disimpen di Google Drive share ke sini.",
     indicators:[
       {title:"Penerimaan bantuan perangkat digitalisasi pembelajaran",desc:"Sekolah telah menerima bantuan perangkat digitalisasi pembelajaran",doc:"Foto penerimaan atau bukti serah terima barang"},
@@ -216,7 +217,7 @@ const modules = [
   },
   {
     id:"dapodik", label:"C", title:"Pelaporan Pemantauan Kualitas Data Dapodik 2026",
-    pctLabel:"Prosentase", pctMin:80, pctMax:100, color:"#8B5CF6", icon:"fa-database",
+    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#8B5CF6", icon:"fa-database",
     driveNote:"Indikator 1-25 berisi foto screenshot dari aplikasi Dapodik dibuat 1 folder dikirim ke Google Drive link nya simpan di kolom bawah.",
     indicators:[
       {title:"Data bangunan telah lengkap diinput di Dapodik",desc:"Kelengkapan data bangunan yang telah diinput di Dapodik",doc:""},
@@ -248,7 +249,7 @@ const modules = [
   },
   {
     id:"spmi", label:"D", title:"Pelaporan Sistem Penjaminan Mutu Internal Tahun 2026",
-    pctLabel:"Prosentase", pctMin:80, pctMax:100, color:"#F59E0B", icon:"fa-shield-halved",
+    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#F59E0B", icon:"fa-shield-halved",
     driveNote:"Dokumen SK Tim SPMI, Peta Mutu, RKT, dll. dibuat 1 folder di Google Drive.",
     indicators:[
       {title:"Tim Penjaminan Mutu Satuan Pendidikan",desc:"Sekolah sudah menetapkan tim SPMI",doc:"SK Tim SPMI di foto"},
@@ -354,7 +355,7 @@ function renderPctModal() {
     <div class="text-center mb-3">
       <div class="text-xs font-bold mb-1" style="color:${m.color}">${m.label} - Indikator ${idx + 1}</div>
       <div class="text-sm font-semibold" style="color:var(--fg)">${shortTitle}</div>
-      <div class="text-xs mt-1" style="color:var(--muted)">Rentang: ${m.pctMin}% — ${m.pctMax}%</div>
+      <div class="text-xs mt-1" style="color:var(--muted)">Rentang: 0% — 100%</div>
     </div>
     <div style="display:flex;align-items:center;gap:4px;justify-content:center">
       <input type="text" id="pctModalInput" class="pct-modal-input" value="${value}" 
@@ -377,9 +378,9 @@ function renderPctModal() {
       <button class="pct-numpad-btn accent-btn" onclick="pctNumpadPress('OK')"><i class="fas fa-check"></i></button>
     </div>
     <div class="flex gap-2 mt-3">
-      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(${m.pctMin})">${m.pctMin}%</button>
-      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(${Math.round((m.pctMin+m.pctMax)/2)})">${Math.round((m.pctMin+m.pctMax)/2)}%</button>
-      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(${m.pctMax})">${m.pctMax}%</button>
+      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(0)">0%</button>
+      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(50)">50%</button>
+      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(100)">100%</button>
       <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(-1)" style="color:var(--red);border-color:rgba(239,68,68,.3)">Hapus</button>
     </div>`;
 }
@@ -428,9 +429,8 @@ function switchTab(i){
   renderTab();
 }
 
+// KARENA SEMUA MODUL 0-100, PRESET JUGA DISAMAKAN
 function getPresetValues(m) {
-  if (m.pctMin === 60) return [60, 70, 80, 90, 100];
-  if (m.pctMin === 80) return [80, 85, 90, 95, 100];
   return [0, 25, 50, 75, 100];
 }
 
@@ -447,9 +447,9 @@ function renderTab(){
     const isActive = pcStr !== "";
     let pctColor = "var(--muted)";
     if (isActive) {
-      if (pc >= m.pctMax) pctColor = "var(--green)";
-      else if (pc >= m.pctMin) pctColor = m.color;
-      else pctColor = "var(--red)";
+      if (pc >= 100) pctColor = "var(--green)"; // 100 = Hijau (Tercapai penuh)
+      else if (pc >= 1) pctColor = m.color;    // 1-99 = Warna Modul (Proses)
+      else pctColor = "var(--red)";            // 0 = Merah (Belum sama sekali)
     }
     const presetBtns = presets.map(v => 
       `<button class="pct-preset ${pcStr === String(v) ? 'active' : ''}" onclick="updatePctValue('${m.id}',${i},${v})">${v}</button>`
@@ -483,10 +483,10 @@ function renderTab(){
   }).join("");
 
   const total = m.indicators.length;
-  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= m.pctMin).length;
+  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= 100).length;
   const belum = d.indicators.filter(x => {
     if (x.status === "Belum") return true;
-    if (x.status === "Sudah") { const p = parseInt(x.percent) || 0; return p < m.pctMin; }
+    if (x.status === "Sudah") { return (parseInt(x.percent) || 0) < 100; }
     return false;
   }).length;
   const belumPilih = d.indicators.filter(x => !x.status).length;
@@ -502,7 +502,7 @@ function renderTab(){
       <div>
         <div class="text-xs font-bold mb-0.5" style="color:${m.color}">${m.label}. Indikator Program</div>
         <h2 class="text-base font-bold leading-tight">${m.title}</h2>
-        <div class="text-xs mt-1" style="color:var(--muted)">Rentang ${m.pctLabel}: <strong style="color:${m.color}">${m.pctMin}% — ${m.pctMax}%</strong></div>
+        <div class="text-xs mt-1" style="color:var(--muted)">Rentang ${m.pctLabel}: <strong style="color:${m.color}">0% — 100%</strong></div>
       </div>
     </div>
 
@@ -567,9 +567,9 @@ function updStatus(mid, idx, val) {
   formData[mid].indicators[idx].status = val;
   const m = modules.find(x => x.id === mid);
   if (val === "Sudah" && !formData[mid].indicators[idx].percent) {
-    formData[mid].indicators[idx].percent = String(m.pctMin);
+    formData[mid].indicators[idx].percent = "100"; // OTOMATIS 100% JIKA SUDAH
   }
-  if (val === "Belum") { formData[mid].indicators[idx].percent = ""; }
+  if (val === "Belum") { formData[mid].indicators[idx].percent = "0"; } // OTOMATIS 0% JIKA BELUM
   renderTab();
   if (scrollEl) scrollEl.scrollTop = savedScroll;
 }
@@ -585,9 +585,9 @@ function debounceSDN(){clearTimeout(sdnTimer);sdnTimer=setTimeout(()=>{sdnName=d
 
 function fillAll(mid){
   const m = modules.find(x => x.id === mid);
-  formData[mid].indicators.forEach(x => { x.status = "Sudah"; x.percent = String(m.pctMax); });
+  formData[mid].indicators.forEach(x => { x.status = "Sudah"; x.percent = "100"; });
   renderTab();
-  showToast("Semua indikator diisi Sudah " + m.pctMax + "%","success");
+  showToast("Semua indikator diisi Sudah 100%","success");
 }
 
 function resetMod(mid){
@@ -613,8 +613,8 @@ function showGuide(){
 }</pre>
       <p>Klik <strong style="color:var(--fg)">Publish</strong>.</p>
       <hr style="border-color:var(--border);margin:12px 0">
-      <p><strong style="color:var(--fg)">Input Persentase:</strong> Geser slider (0-100), klik tombol preset, atau klik angka besar untuk numpad.</p>
-      <p><strong style="color:var(--fg)">Cetak:</strong> "Cetak Modul Ini" untuk modul aktif saja. "Cetak Semua Modul" untuk mencetak A sampai E sekaligus, masing-masing modul otomatis dimulai di halaman baru (kertas A4 Portrait).</p>
+      <p><strong style="color:var(--fg)">Input Persentase:</strong> Geser slider (0-100), klik tombol preset, atau klik angka besar untuk numpad. Semua modul (A-E) menggunakan rentang 0% - 100%.</p>
+      <p><strong style="color:var(--fg)">Cetak:</strong> "Cetak Modul Ini" untuk modul aktif saja. "Cetak Semua Modul" untuk mencetak A sampai E sekaligus, masing-masing modul otomatis dimulai di halaman baru.</p>
     </div>
     <div class="flex justify-end mt-5"><button class="btn-primary text-sm" onclick="closeModal()">Mengerti</button></div>
   </div>`);
@@ -684,90 +684,98 @@ function loadData(){
   });
 }
 
-// ==================== CSS PRINT A4 PORTRAIT — RAPI & TIDAK TERPOTONG ====================
+// ==================== CSS PRINT PORTRAIT YANG RAPI ====================
 const printCSS = `
 <style>
   @page {
     size: A4 portrait;
-    margin: 10mm 8mm;
+    margin: 14mm 12mm;
   }
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box; }
   body {
-    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Arial, sans-serif;
     padding: 0; margin: 0;
-    color: #111; font-size: 8.5pt;
+    color: #111; font-size: 11px; line-height: 1.4;
     -webkit-text-size-adjust: 100%;
   }
   .print-header {
-    text-align: center; margin-bottom: 6px;
-    border-bottom: 2px solid #D4A017; padding-bottom: 5px;
+    text-align: center; margin-bottom: 15px;
+    border-bottom: 3px double #D4A017; padding-bottom: 10px;
   }
-  .print-header h1 { font-size: 13pt; margin: 0 0 1px 0; color: #111; }
-  .print-header h2 { font-size: 8pt; margin: 0 0 3px 0; color: #555; font-weight: normal; }
-  .print-sdn { font-size: 9pt; margin: 0 0 4px 0; }
-  .print-sdn strong { color: #111; }
+  .print-header h1 { font-size: 18px; margin: 0 0 4px 0; color: #111; letter-spacing: 0.5px; }
+  .print-header h2 { font-size: 11px; margin: 0 0 6px 0; color: #555; font-weight: 600; font-style: italic; }
+  .print-sdn { font-size: 12px; margin: 0; font-weight: 700; }
+  .print-sdn span { color: #B8860B; }
+  
   .mod-section { margin-bottom: 0; }
   .mod-section-new-page { page-break-before: always; margin-top: 0; }
   .mod-title {
-    font-size: 9pt; font-weight: 700; margin: 8px 0 4px 0;
-    border-bottom: 1.5px solid #D4A017; padding-bottom: 3px; color: #111;
+    font-size: 13px; font-weight: 800; margin: 0 0 10px 0;
+    padding: 8px 12px; background: #D4A017; color: #000; border-radius: 6px;
+    text-transform: uppercase; letter-spacing: 0.3px;
   }
   .mod-stats {
-    display: flex; gap: 8px; margin-bottom: 4px; font-size: 8pt;
+    display: flex; gap: 10px; margin-bottom: 15px;
   }
   .mod-stat {
-    background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px;
-    padding: 2px 8px; text-align: center;
+    flex: 1; border: 1px solid #ddd; border-radius: 6px;
+    padding: 8px; text-align: center; background: #f9f9f9;
   }
-  .mod-stat .val { font-size: 12pt; font-weight: 800; color: #111; }
-  .mod-stat .lbl { font-size: 7pt; color: #555; }
+  .mod-stat .val { font-size: 16px; font-weight: 800; color: #111; }
+  .mod-stat .lbl { font-size: 9px; color: #555; text-transform: uppercase; margin-top: 2px; }
+  
   table {
-    width: 100%; border-collapse: collapse; margin-bottom: 5px;
-    font-size: 7.5pt; table-layout: fixed;
+    width: 100%; border-collapse: collapse; margin-bottom: 12px; 
+    font-size: 10px; table-layout: fixed; border: 1px solid #ccc;
   }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; } /* MENCEGAH BARIS TABEL TERPOTONG */
   th {
-    background: #D4A017 !important; color: #000 !important;
-    padding: 3px 4px; font-size: 7pt; font-weight: 700;
-    text-align: left; border: 1px solid #B8860B;
-    text-transform: uppercase; letter-spacing: 0.2px;
+    background: #1A2332; color: #D4A017; padding: 8px; 
+    font-size: 10px; text-align: left; border: 1px solid #2A3A4E; 
+    text-transform: uppercase; letter-spacing: 0.3px;
   }
   td {
-    padding: 2px 4px; border: 0.5px solid #bbb;
-    vertical-align: top; word-wrap: break-word; overflow-wrap: break-word;
+    padding: 6px 8px; border: 1px solid #ccc; 
+    vertical-align: top; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;
   }
-  td.col-no { width: 22px; text-align: center; font-size: 7pt; }
-  td.col-status { width: 45px; text-align: center; font-weight: 700; font-size: 7pt; }
-  td.col-pct { width: 35px; text-align: center; font-size: 7pt; }
-  td.col-doc { width: 80px; font-size: 6.5pt; color: #555; }
-  .status-sudah { color: green; }
-  .status-belum { color: red; }
-  .ind-name { font-weight: 600; line-height: 1.25; font-size: 7.5pt; }
-  .ind-desc { font-size: 6.5pt; color: #555; font-style: italic; margin-top: 1px; line-height: 1.2; }
+  .col-no { width: 25px; text-align: center; font-weight: 700; }
+  .col-status { width: 60px; text-align: center; font-weight: 700; }
+  .col-pct { width: 45px; text-align: center; font-weight: 700; }
+  .col-doc { width: 100px; font-size: 9px; color: #555; }
+  
+  .status-sudah { color: #10B981; }
+  .status-belum { color: #EF4444; }
+  .ind-name { font-weight: 600; line-height: 1.35; }
+  .ind-desc { font-size: 9px; color: #555; font-style: italic; margin-top: 3px; line-height: 1.3; }
+  
   .overview-block {
-    margin: 5px 0 3px 0; padding: 5px 7px;
-    background: #fafafa; border: 1px solid #ddd; border-radius: 3px;
-    text-align: justify; font-size: 8pt; line-height: 1.4;
+    margin: 8px 0 12px 0; padding: 12px;
+    background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
+    text-align: justify; font-size: 10px; line-height: 1.5;
   }
-  .overview-label { font-weight: 700; font-size: 8pt; margin-bottom: 2px; color: #333; }
-  .drive-block { margin: 3px 0 8px 0; font-size: 7pt; word-break: break-all; }
-  .drive-label { font-weight: 700; font-size: 7.5pt; color: #333; }
+  .overview-label { font-weight: 700; font-size: 11px; margin-bottom: 6px; color: #333; display: block; }
+  
+  .drive-block {
+    margin: 4px 0 12px 0; font-size: 10px; word-break: break-all;
+    background: #fff8e1; padding: 10px; border: 1px solid #ffe082; border-radius: 6px;
+  }
+  .drive-label { font-weight: 700; font-size: 10px; color: #856404; }
+  
   .print-footer {
-    margin-top: 10px; padding-top: 4px; border-top: 1px solid #ddd;
-    text-align: center; font-size: 7pt; color: #888;
+    margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;
+    text-align: center; font-size: 9px; color: #888;
   }
-  /* CEGAH BARIS TERPOTONG DI TENGAH HALAMAN */
-  tr { page-break-inside: avoid; }
-  thead { display: table-header-group; }
-  .no-data { text-align: center; color: #999; font-style: italic; padding: 10px; font-size: 8pt; }
+  .no-data { text-align: center; color: #999; font-style: italic; padding: 20px; border: 1px dashed #ddd; margin-bottom: 12px; }
 </style>`;
 
 // ==================== GENERATE HTML UNTUK 1 MODUL ====================
 function generateModuleHTML(m, d, sdn, isFirstPage) {
   const total = m.indicators.length;
-  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= m.pctMin).length;
+  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= 100).length;
   const belum = d.indicators.filter(x => {
     if (x.status === "Belum") return true;
-    if (x.status === "Sudah") { return (parseInt(x.percent) || 0) < m.pctMin; }
+    if (x.status === "Sudah") { return (parseInt(x.percent) || 0) < 100; }
     return false;
   }).length;
   const filledPct = d.indicators.filter(x => x.percent !== "").length;
@@ -779,16 +787,17 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
     html += `<div class="print-header">
       <h1>JABAR BERAKSI 2026</h1>
       <h2>( KerJA BAReng BERgerak MengAKselerasi Sekolah Impian )</h2>
-      <p class="print-sdn"><strong>SDN :</strong> ${sdn}</p>
+      <p class="print-sdn">SDN : <span>${sdn}</span></p>
     </div>`;
   }
 
   html += `<div class="mod-section ${isFirstPage ? '' : 'mod-section-new-page'}">`;
   html += `<div class="mod-title">${m.label}. ${m.title}</div>`;
+  
   html += `<div class="mod-stats">
-    <div class="mod-stat"><div class="val">${total}</div><div class="lbl">Total</div></div>
-    <div class="mod-stat"><div class="val" style="color:green">${sudah}</div><div class="lbl">Tercapai</div></div>
-    <div class="mod-stat"><div class="val" style="color:${belum?'red':'green'}">${belum}</div><div class="lbl">Belum</div></div>
+    <div class="mod-stat"><div class="val">${total}</div><div class="lbl">Total Indikator</div></div>
+    <div class="mod-stat"><div class="val" style="color:#10B981">${sudah}</div><div class="lbl">Tercapai</div></div>
+    <div class="mod-stat"><div class="val" style="color:${belum?'#EF4444':'#10B981'}">${belum}</div><div class="lbl">Belum Tercapai</div></div>
     <div class="mod-stat"><div class="val">${avg}%</div><div class="lbl">Rata-rata</div></div>
   </div>`;
 
@@ -797,17 +806,18 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
   } else {
     html += `<table>
       <thead><tr>
-        <th style="width:22px">No</th>
+        <th class="col-no">No</th>
         <th>Indikator</th>
-        <th style="width:45px;text-align:center">Status</th>
-        <th style="width:35px;text-align:center">${m.pctLabel}</th>
-        <th style="width:80px">Dokumen</th>
+        <th class="col-status">Status</th>
+        <th class="col-pct">${m.pctLabel}</th>
+        <th class="col-doc">Dokumen Bukti</th>
       </tr></thead><tbody>`;
 
     m.indicators.forEach((ind, i) => {
       const st = d.indicators[i].status || "-";
       const pc = d.indicators[i].percent ? d.indicators[i].percent + "%" : "-";
       const stClass = st === "Sudah" ? "status-sudah" : (st === "Belum" ? "status-belum" : "");
+      
       html += `<tr>
         <td class="col-no">${i + 1}</td>
         <td>
@@ -824,14 +834,15 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
 
     if (d.overview) {
       html += `<div class="overview-block">
-        <div class="overview-label">Gambaran Umum Pelaksanaan Program ${m.title} di Satuan Pendidikan:</div>
+        <span class="overview-label">Gambaran Umum Pelaksanaan Program ${m.title}:</span>
         ${d.overview}
       </div>`;
     }
 
     if (d.driveLink) {
       html += `<div class="drive-block">
-        <span class="drive-label">Link Google Drive:</span> ${d.driveLink}
+        <span class="drive-label">Link Google Drive Bukti Fisik:</span><br>
+        ${d.driveLink}
       </div>`;
     }
   }
@@ -845,10 +856,12 @@ function printReport() {
   const m = modules[currentTab];
   const d = formData[m.id];
   const sdn = sdnName || "................................";
+
   const bodyContent = generateModuleHTML(m, d, sdn, true);
   const footer = `<div class="print-footer">Dicetak: ${new Date().toLocaleDateString("id-ID",{weekday:"long",year:"numeric",month:"long",day:"numeric"})} | JABAR BERAKSI 2026</div>`;
+
   const w = window.open("", "_blank");
-  w.document.write(`<!DOCTYPE html><html><head><title>Cetak ${m.label} - ${sdn}</title>${printCSS}</head><body>${bodyContent}${footer}<script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Cetak ${m.label} - ${sdn}</title>${printCSS}</head><body>${bodyContent}${footer}<script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
 }
 
@@ -860,18 +873,22 @@ function printAllModules() {
     document.getElementById("sdnName").focus();
     return;
   }
+
   const anyData = modules.some(m => formData[m.id].indicators.some(x => x.status || x.percent));
   if (!anyData) {
     showToast("Tidak ada data sama sekali. Isi dan simpan data terlebih dahulu!", "error");
     return;
   }
+
   let allHTML = '';
   modules.forEach((m, i) => {
     allHTML += generateModuleHTML(m, formData[m.id], sdnName, i === 0);
   });
+
   const footer = `<div class="print-footer">Dicetak: ${new Date().toLocaleDateString("id-ID",{weekday:"long",year:"numeric",month:"long",day:"numeric"})} | JABAR BERAKSI 2026 - ${sdnName}</div>`;
+
   const w = window.open("", "_blank");
-  w.document.write(`<!DOCTYPE html><html><head><title>Cetak Semua Modul - ${sdnName}</title>${printCSS}</head><body>${allHTML}${footer}<script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Cetak Semua Modul - ${sdnName}</title>${printCSS}</head><body>${allHTML}${footer}<script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
 }
 
