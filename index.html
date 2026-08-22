@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JABAR BERAKSI 2026 - Pelaporan Digital</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+:root{--bg:#0B1120;--bg2:#111827;--card:#1A2332;--card2:#1F2B3D;--border:#2A3A4E;--fg:#F1F5F9;--muted:#94A3B8;--accent:#D4A017;--accent2:#F5C542;--green:#10B981;--red:#EF4444;--teal:#14B8A6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
+.font-display{font-family:'Playfair Display',serif}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 600px 400px at 10% 20%,rgba(212,160,23,.07),transparent),radial-gradient(ellipse 500px 500px at 90% 80%,rgba(20,184,166,.05),transparent)}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(42,58,78,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(42,58,78,.25) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,black,transparent)}
+.header-glow{background:linear-gradient(135deg,#0B1120 0%,#162032 50%,#0B1120 100%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;backdrop-filter:blur(20px)}
+.header-line{height:3px;background:linear-gradient(90deg,transparent,var(--accent),var(--teal),var(--accent),transparent);animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%,100%{opacity:.6}50%{opacity:1}}
+.tab-btn{position:relative;padding:11px 16px;border-radius:12px 12px 0 0;font-weight:600;font-size:12px;color:var(--muted);background:transparent;border:1px solid transparent;border-bottom:none;cursor:pointer;transition:all .3s;white-space:nowrap}
+.tab-btn:hover{color:var(--fg);background:rgba(212,160,23,.05)}
+.tab-btn.active{color:var(--accent);background:var(--card);border-color:var(--border)}
+.tab-btn.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:all .3s}
+.input-field{width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;transition:all .2s;outline:none}
+.input-field:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(212,160,23,.15)}
+.input-field::placeholder{color:var(--muted);opacity:.5}
+textarea.input-field{resize:vertical;min-height:70px}
+select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px}
+.rtable{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+.rtable thead th{background:rgba(212,160,23,.1);color:var(--accent2);font-weight:700;padding:10px 8px;text-align:left;border-bottom:2px solid var(--accent);white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.rtable thead th:first-child{border-radius:8px 0 0 0}.rtable thead th:last-child{border-radius:0 8px 0 0}
+.rtable tbody tr{transition:background .2s}.rtable tbody tr:hover{background:rgba(212,160,23,.03)}
+.rtable tbody td{padding:8px;border-bottom:1px solid rgba(42,58,78,.4);vertical-align:top}
+.rtable tbody tr:last-child td{border-bottom:none}
+.rtable .ind-title{font-weight:600;color:var(--fg);line-height:1.4}
+.rtable .ind-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;font-style:italic}
+.rtable .ind-doc{font-size:10px;color:var(--teal);margin-top:3px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#B8860B);color:#000;font-weight:700;padding:11px 24px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .3s;display:inline-flex;align-items:center;gap:7px}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(212,160,23,.3)}
+.btn-secondary{background:transparent;color:var(--fg);font-weight:600;padding:9px 18px;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.stat-card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;transition:all .3s}
+.stat-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 10px 25px rgba(0,0,0,.3)}
+.toast-container{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:9px;animation:toastIn .4s ease;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:400px}
+.toast-success{background:#065F46;border:1px solid #10B981;color:#A7F3D0}
+.toast-error{background:#7F1D1D;border:1px solid #EF4444;color:#FECACA}
+.toast-info{background:#1E3A5F;border:1px solid #3B82F6;color:#BFDBFE}
+.toast-warn{background:#78350F;border:1px solid #F59E0B;color:#FDE68A}
+@keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;max-width:520px;width:100%;transform:scale(.9);transition:transform .3s}
+.modal-overlay.show .modal-box{transform:scale(1)}
+.progress-ring{transform:rotate(-90deg)}.progress-ring-bg{stroke:var(--border)}.progress-ring-fill{transition:stroke-dashoffset .8s ease;stroke-linecap:round}
+.particle{position:fixed;width:3px;height:3px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:0;opacity:0;animation:floatUp linear infinite}
+@keyframes floatUp{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.5}90%{opacity:.15}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+.fade-in{animation:fadeInUp .5s ease both}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.drive-note{padding:12px 14px;border-radius:10px;background:rgba(212,160,23,.06);border:1px dashed rgba(212,160,23,.3);font-size:12px;color:var(--muted);display:flex;align-items:flex-start;gap:10px;margin-bottom:16px}
+.drive-note i{color:var(--accent);margin-top:2px;flex-shrink:0}
+.section-label{font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tab-scroll{max-height:calc(100vh - 190px);overflow-y:auto;padding-right:4px}
+.pct-input{width:80px;text-align:center}
+.status-select{min-width:100px}
+@media(max-width:768px){.tab-btn{padding:9px 10px;font-size:10px}.rtable{font-size:10px}.rtable thead th,.rtable tbody td{padding:6px 4px}.card{padding:14px}.pct-input{width:60px}.status-select{min-width:80px}}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div id="particles"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box" id="modalContent"></div>
+</div>
+
+<!-- Header -->
+<header class="header-glow">
+  <div class="header-line"></div>
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between relative z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,var(--accent),#B8860B)">
+        <i class="fas fa-landmark text-black text-base"></i>
+      </div>
+      <div>
+        <h1 class="font-display text-lg md:text-xl font-black tracking-tight" style="color:var(--accent2)">JABAR BERAKSI 2026</h1>
+        <p class="text-xs" style="color:var(--muted)">( KerJA BAReng BERgerak MengAKselerasi Sekolah Impian )</p>
+      </div>
+    </div>
+    <button class="btn-secondary text-xs" onclick="showGuide()"><i class="fas fa-circle-question"></i><span class="hidden sm:inline"> Panduan</span></button>
+  </div>
+</header>
+
+<!-- Input SDN -->
+<div class="max-w-7xl mx-auto px-4 pt-4 relative z-10">
+  <div class="card flex flex-col sm:flex-row items-start sm:items-center gap-3 fade-in" style="padding:14px 18px">
+    <label class="font-bold text-sm flex items-center gap-2 flex-shrink-0" style="color:var(--accent2)">
+      <i class="fas fa-school"></i> SDN
+    </label>
+    <input type="text" id="sdnName" class="input-field flex-1" placeholder="Masukkan nama SDN Anda..." oninput="debounceSDN()">
+    <button class="btn-primary text-xs py-2.5 px-4 flex-shrink-0" onclick="loadData()"><i class="fas fa-database"></i> Muat Data</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="max-w-7xl mx-auto px-4 mt-4 relative z-10">
+  <div class="flex overflow-x-auto gap-1 pb-0 fade-in" id="tabNav">
+    <button class="tab-btn active" onclick="switchTab(0)"><i class="fas fa-heart" style="margin-right:4px"></i>A. PPK Pembiasaan</button>
+    <button class="tab-btn" onclick="switchTab(1)"><i class="fas fa-laptop" style="margin-right:4px"></i>B. Digitalisasi</button>
+    <button class="tab-btn" onclick="switchTab(2)"><i class="fas fa-database" style="margin-right:4px"></i>C. Kualitas Dapodik</button>
+    <button class="tab-btn" onclick="switchTab(3)"><i class="fas fa-shield-halved" style="margin-right:4px"></i>D. SPMI</button>
+    <button class="tab-btn" onclick="switchTab(4)"><i class="fas fa-users" style="margin-right:4px"></i>E. Daya Tampung PMB</button>
+  </div>
+</div>
+
+<!-- Konten -->
+<div class="max-w-7xl mx-auto px-4 pb-10 relative z-10">
+  <div class="card border-t-0 rounded-tl-none fade-in" id="tabContent" style="animation-delay:.2s"></div>
+</div>
+
+<script>
+// ==================== FIREBASE ====================
+const firebaseConfig = {
+  apiKey:"AIzaSyCb2SIC_zq_7h0z2uzB-Sj5UbfvZV4ttKk",
+  authDomain:"jabarberaksi2026.firebaseapp.com",
+  databaseURL:"https://jabarberaksi2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"jabarberaksi2026",
+  storageBucket:"jabarberaksi2026.firebasestorage.app",
+  messagingSenderId:"136511935966",
+  appId:"1:136511935966:web:0298456c745ffd288fb94f",
+  measurementId:"G-HL214CHJZ1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ==================== DATA INDIKATOR (SESUAI DOKUMEN ASLI) ====================
+const modules = [
+  {
+    id:"ppk", label:"A", title:"Pelaporan Implementasi Penguatan Pendidikan Karakter melalui Pembiasaan di Satuan Pendidikan",
+    pctLabel:"Prosentase (60-100%)", color:"#D4A017", icon:"fa-heart",
+    driveNote:"Indikator 1 s/d 21 berisi foto-foto dibuat 1 folder dan simpan di Google Drive sekolah share linknya dan simpan di kolom link di bawah!",
+    indicators:[
+      {title:"Siswa melaksanakan pembiasaan bangun pagi",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan bangun pagi",doc:""},
+      {title:"Siswa melakukan pembiasaan beribadah",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan beribadah",doc:""},
+      {title:"Siswa melakukan pembiasaan berolahraga",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan berolahraga",doc:""},
+      {title:"Siswa melakukan pembiasaan makan bergizi",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan makan bergizi",doc:""},
+      {title:"Siswa melakukan pembiasaan gemar belajar",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan gemar belajar",doc:""},
+      {title:"Siswa melakukan pembiasaan bermasyarakat",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan bermasyarakat",doc:""},
+      {title:"Siswa melakukan pembiasaan tidur cepat",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan tidur cepat",doc:""},
+      {title:"Siswa melaksanakan Senam Pagi Anak Indonesia Hebat",desc:"Siswa yang melaksanakan Senam Pagi Anak Indonesia Hebat pada pertemuan Pagi Ceria",doc:""},
+      {title:"Siswa menyanyikan Lagu Indonesia Raya",desc:"Siswa yang menyanyikan Lagu Indonesia Raya pada pertemuan Pagi Ceria",doc:""},
+      {title:"Siswa berdoa sesuai keyakinan",desc:"Siswa yang berdoa sesuai keyakinan pada pertemuan Pagi Ceria",doc:""},
+      {title:"Siswa mengikuti kegiatan kepanduan dan ekstrakurikuler",desc:"Siswa yang mengikuti kegiatan Gerakan Kepanduan dan Ekstrakurikuler",doc:""},
+      {title:"Kepala Sekolah menetapkan tata tertib, kode etik dan POS",desc:"Kepala Sekolah telah menetapkan tata tertib, kode etik dan POS",doc:""},
+      {title:"Kepala Sekolah merencanakan kegiatan dan anggaran untuk implementasi BSAN",desc:"Kepala Sekolah telah merencanakan kegiatan dan anggaran untuk implementasi BSAN",doc:""},
+      {title:"Kepala Sekolah melakukan supervisi dan pembinaan terhadap guru dan tendik",desc:"Kepala Sekolah telah melakukan supervisi dan pembinaan terhadap guru dan tendik",doc:""},
+      {title:"Kepala Sekolah memberikan edukasi kepada warga sekolah",desc:"Kepala Sekolah telah memberikan edukasi kepada warga sekolah",doc:""},
+      {title:"Kepala Sekolah melakukan deteksi dini, respons dan penanganan pelanggaran",desc:"Kepala Sekolah telah melakukan deteksi dini, respons dan penanganan pelanggaran",doc:""},
+      {title:"Kepala Sekolah membangun kemitraan dengan orang tua dan pemangku kepentingan",desc:"Kepala Sekolah telah membangun kemitraan dengan orang tua dan pemangku kepentingan",doc:""},
+      {title:"Guru memantau fisik-emosi, deteksi dini, serta respons penanganan pelanggaran murid",desc:"Guru telah memantau fisik-emosi, deteksi dini, serta respons penanganan pelanggaran murid",doc:""},
+      {title:"Guru agama melakukan penguatan nilai spiritual, moral dan etika murid",desc:"Guru agama telah melakukan penguatan nilai spiritual, moral dan etika murid",doc:""},
+      {title:"Guru PJOK menjaga keamanan fisik, membangun sportivitas, kerja sama, mencegah kontak fisik yang beresiko",desc:"Guru PJOK menjaga keamanan fisik, membangun sportivitas, kerja sama, mencegah kontak fisik yang beresiko",doc:""},
+      {title:"Tenaga Kependidikan mendukung terciptanya lingkungan aman dan nyaman sesuai tugasnya",desc:"Tenaga Kependidikan telah mendukung terciptanya lingkungan aman dan nyaman sesuai tugasnya",doc:""}
+    ]
+  },
+  {
+    id:"digital", label:"B", title:"Pelaporan Digitalisasi Pembelajaran di Satuan Pendidikan",
+    pctLabel:"Prosentase (80-100%)", color:"#14B8A6", icon:"fa-laptop",
+    driveNote:"Indicator 1-11 dibuat folder disimpen di Google Drive share ke sini.",
+    indicators:[
+      {title:"Penerimaan bantuan perangkat digitalisasi pembelajaran",desc:"Sekolah telah menerima bantuan perangkat digitalisasi pembelajaran",doc:"Foto penerimaan atau bukti serah terima barang"},
+      {title:"Sekolah memanfaatkan Papan Interaktif Digital (PID) untuk pembelajaran",desc:"Sekolah telah memanfaatkan Papan Interaktif Digital (PID) untuk pembelajaran",doc:"Foto kegiatan"},
+      {title:"Sekolah melakukan inventarisasi peralatan digital yang diterima",desc:"Sekolah telah melakukan inventarisasi peralatan digital yang diterima (pendataan & pencatatan, menginput data ke system inventaris, verifikasi & validasi)",doc:"Surat-surat penerimaan/pemakaian dan/atau lainnya"},
+      {title:"Sekolah melakukan manajemen fasilitas/pengelolaan pemanfaatan",desc:"Sekolah telah melakukan inventarisasi peralatan digital yang diterima (pendataan & pencatatan, menginput data ke system inventaris, verifikasi & validasi)",doc:"Surat-surat penerimaan/pemakaian dan/atau lainnya"},
+      {title:"Sekolah melakukan pemeliharaan, perawatan peralatan digitalisasi",desc:"Sekolah telah melakukan pemeliharaan, perawatan peralatan digitalisasi",doc:"Dokumen"},
+      {title:"Sekolah melakukan penyimpanan dan pengamanan peralatan digitalisasi secara tepat",desc:"Sekolah telah melakukan penyimpanan dan pengamanan peralatan digitalisasi secara tepat",doc:"Foto ruangan/teralis"},
+      {title:"Sekolah melakukan pelatihan atau penguatan kapasitas pengguna peralatan digitalisasi pembelajaran",desc:"Sekolah telah melakukan pelatihan atau penguatan kapasitas pengguna peralatan digitalisasi pembelajaran",doc:"Foto kegiatan cutor sebaya / berbagi teknik penggunaannya"},
+      {title:"Sekolah melakukan penyusunan dan pembuatan bahan ajar",desc:"Sekolah telah melakukan penyusunan dan pembuatan bahan ajar",doc:"Foto kegiatan dalam penyusunan dan pembuatan bahan ajar"},
+      {title:"Sekolah melakukan evaluasi dan pelaporan penggunaan peralatan digitalisasi pembelajaran",desc:"Sekolah telah melakukan evaluasi dan pelaporan penggunaan peralatan digitalisasi pembelajaran",doc:"Buat laporan penggunaan peralatan digitalisasi pembelajaran, di buku (dipoto)"},
+      {title:"Sekolah melaporkan penggunaan dana BOSP untuk digitalisasi",desc:"Sekolah telah melaporkan penggunaan dana BOSP untuk digitalisasi (penggunaan dana untuk keperluan pemeliharaan, perawatan, peningkatan kompetensi PTK)",doc:"Buat laporan penggunaan dana BOSP untuk digitalisasi"},
+      {title:"Sekolah melakukan pengimbasan hasil bimtek/pelatihan digitalisasi pembelajaran pada sekolah lain",desc:"Sekolah sudah melakukan pengimbasan hasil bimtek/pelatihan digitalisasi pembelajaran pada sekolah lain",doc:"Foto pengimbasan hasil bimtek/pelatihan digitalisasi pembelajaran pada sekolah lain"}
+    ]
+  },
+  {
+    id:"dapodik", label:"C", title:"Pelaporan Pemantauan Kualitas Data Dapodik 2026",
+    pctLabel:"Prosentase (80-100%)", color:"#8B5CF6", icon:"fa-database",
+    driveNote:"Indikator 1-25 berisi foto screenshot dari aplikasi Dapodik dibuat 1 folder dikirim ke Google Drive link nya simpan di kolom bawah.",
+    indicators:[
+      {title:"Data bangunan telah lengkap diinput di Dapodik",desc:"Kelengkapan data bangunan yang telah diinput di Dapodik",doc:""},
+      {title:"Data bangunan pada Dapodik telah valid",desc:"Persentase data bangunan telah valid",doc:""},
+      {title:"Data bangunan pada Dapodik telah mutakhir",desc:"Data bangunan pada Dapodik telah dimutakhirkan/diperbaharui",doc:""},
+      {title:"Data seluruh peserta didik telah lengkap diinput pada Dapodik",desc:"Data peserta didik lengkap diinput pada Dapodik",doc:""},
+      {title:"Data seluruh peserta didik pada Dapodik telah valid",desc:"Data peserta didik telah valid pada Dapodik",doc:""},
+      {title:"Data seluruh peserta didik pada Dapodik telah mutakhir",desc:"Data peserta didik pada Dapodik telah mutakhir/data terkini",doc:""},
+      {title:"Data seluruh PTK telah lengkap terinput di Dapodik",desc:"Data PTK yang lengkap terinput di Dapodik",doc:""},
+      {title:"Data seluruh PTK pada Dapodik telah valid",desc:"Data PTK yang telah valid pada Dapodik",doc:""},
+      {title:"Data seluruh PTK pada Dapodik telah mutakhir",desc:"Data PTK telah dimutakhirkan/data terkini pada Dapodik",doc:""},
+      {title:"Data Rombongan Belajar telah lengkap diinput di Dapodik",desc:"Data rombel telah lengkap diinput di Dapodik",doc:""},
+      {title:"Data Rombongan Belajar pada Dapodik telah valid",desc:"Data rombel telah valid pada Dapodik",doc:""},
+      {title:"Data Rombongan Belajar pada Dapodik telah mutakhir",desc:"Data rombel telah mutakhir pada Dapodik",doc:""},
+      {title:"Data ruang telah lengkap diinput di Dapodik",desc:"Data ruang telah lengkap diinput di Dapodik",doc:""},
+      {title:"Data ruang pada Dapodik telah valid",desc:"Data ruang telah valid di Dapodik",doc:""},
+      {title:"Data ruang pada Dapodik telah mutakhir",desc:"Data ruang di Dapodik telah mutakhir atau sesuai kondisi terakhir",doc:""},
+      {title:"Data tanah telah lengkap diinput di Dapodik",desc:"Data tanah telah lengkap diinput di Dapodik",doc:""},
+      {title:"Data tanah pada Dapodik telah valid",desc:"Data tanah telah valid di Dapodik",doc:""},
+      {title:"Data tanah pada Dapodik telah mutakhir",desc:"Data tanah telah dimutakhirkan atau sesuai kondisi terakhir pada Dapodik",doc:""},
+      {title:"Data entitas sekolah telah lengkap diinput di Dapodik",desc:"Data entitas sekolah yang telah lengkap diinput di Dapodik",doc:""},
+      {title:"Data entitas sekolah pada Dapodik telah valid",desc:"Data entitas sekolah telah valid pada Dapodik",doc:""},
+      {title:"Data entitas sekolah pada Dapodik telah mutakhir",desc:"Data entitas sekolah telah mutakhir atau sesuai dengan kondisi terakhir pada Dapodik",doc:""},
+      {title:"Sekolah melakukan sinkronisasi Dapodik setiap ada perubahan",desc:"",doc:""},
+      {title:"Sekolah melakukan sinkronisasi Dapodik minimal satu kali setiap satu semester sekali",desc:"Berapa kali sekolah melakukan sinkronisasi 3 bulan terakhir",doc:"Nilai"},
+      {title:"Sekolah melakukan sinkronisasi Dapodik sesuai dengan jadwal program pusat (PIP, BOSP, Revitalisasi)",desc:"",doc:"-"},
+      {title:"Jumlah siswa telah sesuai antara di Dapodik dengan kondisi riil",desc:"Jumlah siswa yang telah sesuai dengan Dapodik",doc:"Nilai"}
+    ]
+  },
+  {
+    id:"spmi", label:"D", title:"Pelaporan Sistem Penjaminan Mutu Internal Tahun 2026",
+    pctLabel:"Prosentase (80-100%)", color:"#F59E0B", icon:"fa-shield-halved",
+    driveNote:"Dokumen SK Tim SPMI, Peta Mutu, RKT, dll. dibuat 1 folder di Google Drive.",
+    indicators:[
+      {title:"Tim Penjaminan Mutu Satuan Pendidikan",desc:"Sekolah sudah menetapkan tim SPMI",doc:"SK Tim SPMI di foto"},
+      {title:"Peta Mutu Sekolah",desc:"Sekolah sudah memiliki peta mutu pendidikan sekolah",doc:"Ada Peta Mutu Pendidikan"},
+      {title:"RKT Berbasis Data",desc:"Sekolah telah menyusun Rencana Kerja Tahunan berbasis data",doc:"-"},
+      {title:"Program Perbaikan Mutu",desc:"Sekolah telah menyusun program perbaikan mutu",doc:"-"},
+      {title:"Monitoring dan Evaluasi",desc:"Sekolah telah menyusun rencana dan melaksanakan monitoring dan evaluasi mutu",doc:"-"},
+      {title:"Rencana tindak lanjut perbaikan mutu",desc:"Sekolah sudah menyusun rencana tindak lanjut perbaikan mutu",doc:"-"}
+    ]
+  },
+  {
+    id:"pmb", label:"E", title:"Pelaporan Kesiapan Data Untuk Analisis Daya Tampung Penerimaan Murid Baru 2026",
+    pctLabel:"Nilai (0-100)", color:"#EC4899", icon:"fa-users",
+    driveNote:"Dokumen bukti analisis daya tampung dibuat 1 folder di Google Drive.",
+    indicators:[
+      {title:"Satdik melakukan analisis daya tampung siswa per rombongan belajar",desc:"Jumlah daya tampung siswa per rombongan belajar",doc:""},
+      {title:"Satdik melakukan analisis jumlah rombongan belajar siswa baru",desc:"Jumlah rombongan belajar",doc:""},
+      {title:"Satdik melakukan analisis ketersediaan ruang kelas untuk murid baru",desc:"Jumlah ruang kelas yang tersedia untuk murid baru",doc:""}
+    ]
+  }
+];
+
+// ==================== STATE ====================
+let currentTab = 0;
+let formData = {};
+let sdnName = "";
+let sdnTimer = null;
+
+// Inisialisasi data
+modules.forEach(m => {
+  formData[m.id] = {
+    indicators: m.indicators.map(() => ({status:"", percent:""})),
+    overview: "",
+    driveLink: ""
+  };
+});
+
+// ==================== PARTIKEL ====================
+(function(){
+  const c = document.getElementById("particles");
+  for(let i=0;i<15;i++){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.style.left=Math.random()*100+"%";
+    p.style.animationDuration=(10+Math.random()*14)+"s";
+    p.style.animationDelay=(Math.random()*12)+"s";
+    const s=2+Math.random()*2;
+    p.style.width=p.style.height=s+"px";
+    c.appendChild(p);
+  }
+})();
+
+// ==================== TOAST ====================
+function showToast(msg, type="success"){
+  const c=document.getElementById("toastContainer");
+  const icons={success:"fa-circle-check",error:"fa-circle-xmark",info:"fa-circle-info",warn:"fa-triangle-exclamation"};
+  const t=document.createElement("div");
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.transition="opacity .4s,transform .4s";t.style.opacity="0";t.style.transform="translateX(60px)";setTimeout(()=>t.remove(),400)},4000);
+}
+
+// ==================== MODAL ====================
+function showModal(html){const m=document.getElementById("confirmModal");document.getElementById("modalContent").innerHTML=html;m.classList.add("show");}
+function closeModal(){document.getElementById("confirmModal").classList.remove("show");}
+
+// ==================== PROGRESS RING ====================
+function ringSVG(pct,color,sz=52){
+  const r=(sz-8)/2,circ=2*Math.PI*r,offset=circ-(Math.max(0,Math.min(100,pct||0))/100)*circ;
+  return `<svg width="${sz}" height="${sz}" class="progress-ring"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke-width="4" class="progress-ring-bg"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke-width="4" stroke="${color}" class="progress-ring-fill" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/><text x="${sz/2}" y="${sz/2}" text-anchor="middle" dominant-baseline="central" fill="${color}" font-size="11" font-weight="800" style="transform:rotate(90deg);transform-origin:center">${pct||0}%</text></svg>`;
+}
+
+// ==================== TAB SWITCHING ====================
+function switchTab(i){
+  currentTab=i;
+  document.querySelectorAll(".tab-btn").forEach((b,j)=>b.classList.toggle("active",j===i));
+  renderTab();
+}
+
+// ==================== RENDER ====================
+function renderTab(){
+  const m=modules[currentTab];
+  const d=formData[m.id];
+
+  // Baris tabel
+  const rows=m.indicators.map((ind,i)=>{
+    const st=d.indicators[i].status;
+    const pc=d.indicators[i].percent;
+    return `<tr>
+      <td style="text-align:center;font-weight:700;color:var(--muted);width:35px">${i+1}</td>
+      <td style="min-width:200px">
+        <div class="ind-title">${ind.title}</div>
+        ${ind.desc?`<div class="ind-desc">${ind.desc}</div>`:""}
+      </td>
+      <td style="min-width:110px">
+        <select class="input-field status-select" onchange="updInd('${m.id}',${i},'status',this.value)">
+          <option value="" ${!st?"selected":""}>-- Pilih --</option>
+          <option value="Sudah" ${st==="Sudah"?"selected":""}>Sudah</option>
+          <option value="Belum" ${st==="Belum"?"selected":""}>Belum</option>
+        </select>
+      </td>
+      <td style="min-width:90px">
+        <input type="number" class="input-field pct-input" placeholder="%" value="${pc}" oninput="updInd('${m.id}',${i},'percent',this.value)">
+      </td>
+      <td style="width:60px;text-align:center">${pc?ringSVG(parseInt(pc),m.color,48):'<span style="color:var(--border);font-size:18px">-</span>'}</td>
+      <td style="min-width:140px;font-size:11px;color:var(--muted)">${ind.doc||"-"}</td>
+    </tr>`;
+  }).join("");
+
+  // Statistik
+  const total=m.indicators.length;
+  const sudah=d.indicators.filter(x=>x.status==="Sudah").length;
+  const belum=d.indicators.filter(x=>x.status==="Belum").length;
+  const filledPct=d.indicators.filter(x=>x.percent!=="").length;
+  const avg=filledPct>0?Math.round(d.indicators.reduce((s,x)=>s+(parseInt(x.percent)||0),0)/filledPct):0;
+
+  document.getElementById("tabContent").innerHTML=`
+  <div class="tab-scroll">
+    <!-- Judul Modul -->
+    <div class="flex items-start gap-3 mb-5">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${m.color}18;border:1px solid ${m.color}35">
+        <i class="fas ${m.icon} text-lg" style="color:${m.color}"></i>
+      </div>
+      <div>
+        <div class="text-xs font-bold mb-0.5" style="color:${m.color}">${m.label}. Indikator Program</div>
+        <h2 class="text-base font-bold leading-tight">${m.title}</h2>
+      </div>
+    </div>
+
+    <!-- Statistik -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="stat-card"><div class="text-xl font-black" style="color:var(--accent2)">${total}</div><div class="text-xs mt-0.5" style="color:var(--muted)">Total Indikator</div></div>
+      <div class="stat-card"><div class="text-xl font-black" style="color:var(--green)">${sudah}</div><div class="text-xs mt-0.5" style="color:var(--muted)">Sudah Tercapai</div></div>
+      <div class="stat-card"><div class="text-xl font-black" style="color:${belum?'var(--red)':'var(--green)'}">${belum}</div><div class="text-xs mt-0.5" style="color:var(--muted)">Belum Tercapai</div></div>
+      <div class="stat-card">${ringSVG(avg,m.color,50)}<div class="text-xs mt-0.5" style="color:var(--muted)">Rata-rata</div></div>
+    </div>
+
+    <!-- Catatan Drive -->
+    <div class="drive-note"><i class="fab fa-google-drive"></i><span>${m.driveNote}</span></div>
+
+    <!-- Tabel -->
+    <div class="overflow-x-auto mb-5" style="border:1px solid var(--border);border-radius:10px">
+      <table class="rtable">
+        <thead><tr>
+          <th style="width:35px">No</th>
+          <th>Indikator</th>
+          <th>Status Ketercapaian<br>(Sudah/Belum)</th>
+          <th>${m.pctLabel}</th>
+          <th style="width:60px;text-align:center">Progress</th>
+          <th>Dokumen</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+
+    <!-- Gambaran Umum -->
+    <div class="mb-4">
+      <label class="section-label"><i class="fas fa-file-lines"></i> Gambaran Umum Pelaksanaan Program ${m.title} di Satuan Pendidikan</label>
+      <textarea class="input-field" rows="3" placeholder="Tuliskan gambaran umum pelaksanaan program..." oninput="formData['${m.id}'].overview=this.value">${d.overview}</textarea>
+    </div>
+
+    <!-- Link Google Drive -->
+    <div class="mb-5">
+      <label class="section-label"><i class="fab fa-google-drive"></i> Alamat Google Drive Folder Penyimpanan Dokumentasi/Bukti Fisik</label>
+      <div class="flex gap-2">
+        <input type="url" class="input-field flex-1" placeholder="https://drive.google.com/drive/folders/..." value="${d.driveLink}" oninput="updDrive('${m.id}',this.value)">
+        <a href="${d.driveLink||'#'}" target="_blank" rel="noopener" class="btn-secondary flex-shrink-0 ${d.driveLink?'':'opacity-30 pointer-events-none'}" id="drvBtn_${m.id}"><i class="fab fa-google-drive"></i> Buka</a>
+      </div>
+    </div>
+
+    <!-- Tombol Aksi -->
+    <div class="flex flex-wrap gap-2 pt-4" style="border-top:1px solid var(--border)">
+      <button class="btn-primary" onclick="confirmSave()"><i class="fas fa-cloud-arrow-up"></i> Simpan ke Database</button>
+      <button class="btn-secondary" onclick="printReport()"><i class="fas fa-print"></i> Cetak Laporan</button>
+      <button class="btn-secondary" onclick="fillAll('${m.id}')"><i class="fas fa-check-double"></i> Isi Semua Sudah</button>
+      <button class="btn-secondary" onclick="resetMod('${m.id}')"><i class="fas fa-rotate-left"></i> Reset</button>
+    </div>
+  </div>`;
+}
+
+// ==================== UPDATE FIELD ====================
+function updInd(mid,i,field,val){
+  formData[mid].indicators[i][field]=val;
+  if(field==="percent") renderTab();
+}
+function updDrive(mid,val){
+  formData[mid].driveLink=val;
+  const btn=document.getElementById("drvBtn_"+mid);
+  if(btn){if(val){btn.href=val;btn.classList.remove("opacity-30","pointer-events-none")}else{btn.href="#";btn.classList.add("opacity-30","pointer-events-none")}}
+}
+
+// ==================== UTILITAS ====================
+function debounceSDN(){clearTimeout(sdnTimer);sdnTimer=setTimeout(()=>{sdnName=document.getElementById("sdnName").value.trim();localStorage.setItem("jba_sdn",sdnName)},400)}
+
+function fillAll(mid){
+  formData[mid].indicators.forEach(x=>{if(!x.status)x.status="Sudah";if(!x.percent)x.percent="80"});
+  renderTab();showToast("Semua indikator diisi 'Sudah'","info");
+}
+function resetMod(mid){
+  const m=modules.find(x=>x.id===mid);
+  formData[mid]={indicators:m.indicators.map(()=>({status:"",percent:""})),overview:"",driveLink:""};
+  renderTab();showToast("Data modul telah direset","info");
+}
+
+function showGuide(){
+  showModal(`<div class="text-left">
+    <h3 class="text-lg font-bold mb-4" style="color:var(--accent2)"><i class="fas fa-book-open mr-2"></i>Panduan Penggunaan</h3>
+    <div class="space-y-3 text-sm" style="color:var(--muted)">
+      <p><strong style="color:var(--fg)">PENTING:</strong> Pastikan aturan Firebase Realtime Database sudah diatur. Buka Firebase Console → Realtime Database → Rules, lalu atur seperti ini:</p>
+      <pre style="background:var(--bg);padding:12px;border-radius:8px;font-size:11px;overflow-x:auto;color:var(--teal);border:1px solid var(--border)">{
+  "rules": {
+    "schools": {
+      "$school": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}</pre>
+      <p>Kemudian klik <strong style="color:var(--fg)">Publish</strong>.</p>
+      <hr style="border-color:var(--border);margin:12px 0">
+      <p><strong style="color:var(--fg)">Langkah Penggunaan:</strong></p>
+      <ol style="padding-left:18px;list-style:decimal;space-y:4px">
+        <li>Masukkan Nama SDN, klik <strong style="color:var(--fg)">Muat Data</strong></li>
+        <li>Pilih tab A/B/C/D/E untuk modul pelaporan</li>
+        <li>Isi Status (Sudah/Belum) dan Prosentase setiap indikator</li>
+        <li>Upload bukti fisik ke Google Drive, paste link-nya</li>
+        <li>Tulis Gambaran Umum</li>
+        <li>Klik <strong style="color:var(--fg)">Simpan ke Database</strong></li>
+      </ol>
+    </div>
+    <div class="flex justify-end mt-5"><button class="btn-primary text-sm" onclick="closeModal()">Mengerti</button></div>
+  </div>`);
+}
+
+// ==================== SIMPAN KE FIREBASE ====================
+function confirmSave(){
+  sdnName=document.getElementById("sdnName").value.trim();
+  if(!sdnName){showToast("Masukkan nama SDN terlebih dahulu!","error");document.getElementById("sdnName").focus();return}
+  showModal(`<div class="text-center mb-5">
+    <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style="background:rgba(212,160,23,.15)">
+      <i class="fas fa-cloud-arrow-up text-xl" style="color:var(--accent)"></i>
+    </div>
+    <h3 class="text-lg font-bold mb-1">Simpan Data?</h3>
+    <p class="text-sm" style="color:var(--muted)">Data modul <strong style="color:var(--fg)">${modules[currentTab].label}</strong> untuk <strong style="color:var(--fg)">${sdnName}</strong> akan disimpan ke Firebase.</p>
+  </div>
+  <div class="flex gap-3">
+    <button class="btn-secondary flex-1 justify-center" onclick="closeModal()">Batal</button>
+    <button class="btn-primary flex-1 justify-center" onclick="doSave()">Ya, Simpan</button>
+  </div>`);
+}
+
+function doSave(){
+  closeModal();
+  const key=sdnName.replace(/[^a-zA-Z0-9_]/g,"_").replace(/_+/g,"_").replace(/^_|_$/g,"");
+  if(!key){showToast("Nama SDN tidak valid!","error");return}
+  const m=modules[currentTab];
+  const d=formData[m.id];
+  const hasData=d.indicators.some(x=>x.status||x.percent)||d.overview||d.driveLink;
+  if(!hasData){showToast("Tidak ada data untuk disimpan!","error");return}
+
+  showToast("Menyimpan data...","info");
+  db.ref("schools/"+key+"/"+m.id).set({
+    indicators:d.indicators,
+    overview:d.overview,
+    driveLink:d.driveLink,
+    lastUpdated:new Date().toISOString(),
+    schoolName:sdnName
+  }).then(()=>{
+    showToast("Data "+m.label+" berhasil disimpan!","success");
+  }).catch(err=>{
+    if(String(err).includes("permission_denied")||String(err).includes("PERMISSION_DENIED")){
+      showToast("PERMISSION DENIED: Aturan Firebase belum diatur! Buka Panduan untuk cara mengatasi.","error");
+      setTimeout(()=>showGuide(),500);
+    } else {
+      showToast("Gagal menyimpan: "+err.message,"error");
+    }
+  });
+}
+
+// ==================== MUAT DATA DARI FIREBASE ====================
+function loadData(){
+  sdnName=document.getElementById("sdnName").value.trim();
+  if(!sdnName){showToast("Masukkan nama SDN terlebih dahulu!","error");document.getElementById("sdnName").focus();return}
+  const key=sdnName.replace(/[^a-zA-Z0-9_]/g,"_").replace(/_+/g,"_").replace(/^_|_$/g,"");
+  if(!key){showToast("Nama SDN tidak valid!","error");return}
+
+  showToast("Memuat data "+sdnName+"...","info");
+
+  db.ref("schools/"+key).once("value").then(snapshot=>{
+    const data=snapshot.val();
+    if(!data){
+      showToast("Belum ada data tersimpan untuk "+sdnName+". Silakan isi dan simpan terlebih dahulu.","warn");
+      return;
+    }
+
+    // Muat setiap modul yang ada di database
+    modules.forEach(m=>{
+      if(data[m.id]){
+        const saved=data[m.id];
+        const inds=saved.indicators||[];
+        // Pastikan array indikator cukup panjang (tambahkan jika kurang)
+        const newInds=m.indicators.map((_,i)=>{
+          if(i<inds.length) return {status:inds[i].status||"",percent:inds[i].percent||""};
+          return {status:"",percent:""};
+        });
+        formData[m.id]={
+          indicators:newInds,
+          overview:saved.overview||"",
+          driveLink:saved.driveLink||""
+        };
+      }
+    });
+
+    renderTab();
+    showToast("Data "+sdnName+" berhasil dimuat!","success");
+  }).catch(err=>{
+    if(String(err).includes("permission_denied")||String(err).includes("PERMISSION_DENIED")){
+      showToast("PERMISSION DENIED: Aturan Firebase belum diatur! Klik Panduan untuk solusinya.","error");
+      setTimeout(()=>showGuide(),600);
+    } else {
+      showToast("Gagal memuat: "+err.message,"error");
+    }
+  });
+}
+
+// ==================== CETAK ====================
+function printReport(){
+  const m=modules[currentTab];
+  const d=formData[m.id];
+  const sdn=sdnName||"................................";
+  let rows=m.indicators.map((ind,i)=>{
+    const st=d.indicators[i].status||"-";
+    const pc=d.indicators[i].percent?(d.indicators[i].percent+"%"):"-";
+    return `<tr>
+      <td style="border:1px solid #999;padding:5px 7px;text-align:center;vertical-align:top">${i+1}</td>
+      <td style="border:1px solid #999;padding:5px 7px;vertical-align:top"><strong>${ind.title}</strong>${ind.desc?"<br><em style='font-size:11px;color:#555'>"+ind.desc+"</em>":""}</td>
+      <td style="border:1px solid #999;padding:5px 7px;text-align:center;vertical-align:top;font-weight:bold;color:${st==='Sudah'?'green':'red'}">${st}</td>
+      <td style="border:1px solid #999;padding:5px 7px;text-align:center;vertical-align:top">${pc}</td>
+      <td style="border:1px solid #999;padding:5px 7px;font-size:11px;vertical-align:top;color:#555">${ind.doc||"-"}</td>
+    </tr>`;
+  }).join("");
+
+  const w=window.open("","_blank");
+  w.document.write(`<!DOCTYPE html><html><head><title>Laporan</title>
+  <style>body{font-family:'Segoe UI',Arial,sans-serif;padding:25px;color:#111;max-width:950px;margin:auto;font-size:12px}
+  h1{font-size:16px;text-align:center;margin-bottom:2px}h2{font-size:12px;text-align:center;font-weight:normal;color:#555;margin-bottom:2px}
+  h3{font-size:13px;margin:18px 0 8px;border-bottom:2px solid #D4A017;padding-bottom:4px}
+  table{width:100%;border-collapse:collapse;margin-bottom:16px}th{background:#D4A017;color:#000;padding:7px;font-size:11px}
+  .info{margin:8px 0}.footer{margin-top:24px;font-size:10px;color:#888;text-align:center;border-top:1px solid #ddd;padding-top:8px}</style></head>
+  <body><h1>JABAR BERAKSI 2026</h1><h2>( KerJA BAReng BERgerak MengAKselerasi Sekolah Impian )</h2>
+  <p class="info"><strong>SDN :</strong> ${sdn}</p>
+  <h3>${m.label}. ${m.title}</h3>
+  <table><thead><tr><th style="width:30px">No</th><th>Indikator</th><th style="width:90px;text-align:center">Status</th><th style="width:80px;text-align:center">Prosentase</th><th style="width:140px">Dokumen</th></tr></thead><tbody>${rows}</tbody></table>
+  <p class="info"><strong>Gambaran Umum Pelaksanaan Program ${m.title} di Satuan Pendidikan:</strong><br>${d.overview||"-"}</p>
+  <p class="info"><strong>Alamat Google Drive Folder Penyimpanan Dokumentasi/Bukti Fisik:</strong> ${d.driveLink?'<a href="'+d.driveLink+'" target="_blank">'+d.driveLink+'</a>':"-"}</p>
+  <div class="footer">Dicetak: ${new Date().toLocaleDateString("id-ID",{weekday:"long",year:"numeric",month:"long",day:"numeric"})} | JABAR BERAKSI 2026</div>
+  <script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
+// ==================== INISIALISASI ====================
+window.addEventListener("DOMContentLoaded",()=>{
+  const saved=localStorage.getItem("jba_sdn");
+  if(saved){document.getElementById("sdnName").value=saved;sdnName=saved}
+  renderTab();
+});
+</script>
+</body>
+</html>
