@@ -34,7 +34,7 @@ select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Cs
 .rtable thead th{background:rgba(212,160,23,.1);color:var(--accent2);font-weight:700;padding:10px 8px;text-align:left;border-bottom:2px solid var(--accent);white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
 .rtable thead th:first-child{border-radius:8px 0 0 0}.rtable thead th:last-child{border-radius:0 8px 0 0}
 .rtable tbody tr{transition:background .2s}.rtable tbody tr:hover{background:rgba(212,160,23,.03)}
-.rtable tbody td{padding:8px;border-bottom:1px solid rgba(42,58,78,.4);vertical-align:top}
+.rtable tbody td{padding:8px;border-bottom:1px solid rgba(42,58,78,.4);vertical-align:middle}
 .rtable tbody tr:last-child td{border-bottom:none}
 .rtable .ind-title{font-weight:600;color:var(--fg);line-height:1.4}
 .rtable .ind-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;font-style:italic}
@@ -65,9 +65,45 @@ select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Cs
 .drive-note i{color:var(--accent);margin-top:2px;flex-shrink:0}
 .section-label{font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .tab-scroll{max-height:calc(100vh - 190px);overflow-y:auto;padding-right:4px}
-.pct-input{width:80px;text-align:center}
 .status-select{min-width:100px}
-@media(max-width:768px){.tab-btn{padding:9px 10px;font-size:10px}.rtable{font-size:10px}.rtable thead th,.rtable tbody td{padding:6px 4px}.card{padding:14px}.pct-input{width:60px}.status-select{min-width:80px}}
+
+/* ===== SLIDER PERSSENTASE YANG NYAMAN ===== */
+.pct-cell{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:130px}
+.pct-display{font-size:20px;font-weight:800;cursor:pointer;padding:2px 8px;border-radius:6px;transition:all .15s;user-select:none;min-width:52px;text-align:center;line-height:1.2}
+.pct-display:hover{background:rgba(212,160,23,.12);transform:scale(1.05)}
+.pct-display.editing{background:var(--bg);border:1px solid var(--accent);box-shadow:0 0 0 3px rgba(212,160,23,.2);outline:none}
+.pct-slider{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:3px;outline:none;cursor:pointer;transition:background .2s}
+.pct-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg);box-shadow:0 2px 6px rgba(0,0,0,.4);transition:transform .15s}
+.pct-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.pct-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.pct-presets{display:flex;gap:3px;margin-top:1px}
+.pct-preset{font-size:9px;padding:2px 5px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;transition:all .15s;line-height:1.2}
+.pct-preset:hover{border-color:var(--accent);color:var(--accent);background:rgba(212,160,23,.08)}
+.pct-preset.active{border-color:var(--accent);color:#000;background:var(--accent)}
+
+/* ===== MODAL INPUT PERSSENTASE BESAR ===== */
+.pct-modal-input{width:100%;padding:14px;background:var(--bg);border:2px solid var(--accent);border-radius:12px;color:var(--fg);font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;text-align:center;outline:none;letter-spacing:1px}
+.pct-modal-input:focus{box-shadow:0 0 0 4px rgba(212,160,23,.2)}
+.pct-modal-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.pct-numpad-btn{padding:14px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--fg);font-size:20px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.pct-numpad-btn:hover{background:rgba(212,160,23,.1);border-color:var(--accent);color:var(--accent)}
+.pct-numpad-btn:active{transform:scale(.95)}
+.pct-numpad-btn.wide{grid-column:span 2}
+.pct-numpad-btn.accent-btn{background:linear-gradient(135deg,var(--accent),#B8860B);color:#000;border-color:transparent}
+.pct-numpad-btn.accent-btn:hover{box-shadow:0 4px 15px rgba(212,160,23,.3);color:#000}
+.pct-numpad-btn.danger-btn{color:var(--red);border-color:rgba(239,68,68,.3)}
+.pct-numpad-btn.danger-btn:hover{background:rgba(239,68,68,.1);border-color:var(--red)}
+
+@media(max-width:768px){
+  .tab-btn{padding:9px 10px;font-size:10px}
+  .rtable{font-size:10px}
+  .rtable thead th,.rtable tbody td{padding:6px 4px}
+  .card{padding:14px}
+  .pct-cell{min-width:100px}
+  .pct-display{font-size:16px}
+  .pct-slider::-webkit-slider-thumb{width:20px;height:20px}
+  .pct-preset{font-size:8px;padding:1px 4px}
+}
 </style>
 </head>
 <body>
@@ -76,9 +112,14 @@ select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Cs
 <div id="particles"></div>
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- Modal -->
+<!-- Modal Konfirmasi -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal-box" id="modalContent"></div>
+</div>
+
+<!-- Modal Input Persentase Besar (Numpad) -->
+<div class="modal-overlay" id="pctModal">
+  <div class="modal-box" style="max-width:340px" id="pctModalContent"></div>
 </div>
 
 <!-- Header -->
@@ -140,11 +181,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ==================== DATA INDIKATOR (SESUAI DOKUMEN ASLI) ====================
+// ==================== DATA INDIKATOR ====================
 const modules = [
   {
     id:"ppk", label:"A", title:"Pelaporan Implementasi Penguatan Pendidikan Karakter melalui Pembiasaan di Satuan Pendidikan",
-    pctLabel:"Prosentase (60-100%)", color:"#D4A017", icon:"fa-heart",
+    pctLabel:"Prosentase", pctMin:60, pctMax:100, color:"#D4A017", icon:"fa-heart",
     driveNote:"Indikator 1 s/d 21 berisi foto-foto dibuat 1 folder dan simpan di Google Drive sekolah share linknya dan simpan di kolom link di bawah!",
     indicators:[
       {title:"Siswa melaksanakan pembiasaan bangun pagi",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan bangun pagi",doc:""},
@@ -172,7 +213,7 @@ const modules = [
   },
   {
     id:"digital", label:"B", title:"Pelaporan Digitalisasi Pembelajaran di Satuan Pendidikan",
-    pctLabel:"Prosentase (80-100%)", color:"#14B8A6", icon:"fa-laptop",
+    pctLabel:"Prosentase", pctMin:80, pctMax:100, color:"#14B8A6", icon:"fa-laptop",
     driveNote:"Indicator 1-11 dibuat folder disimpen di Google Drive share ke sini.",
     indicators:[
       {title:"Penerimaan bantuan perangkat digitalisasi pembelajaran",desc:"Sekolah telah menerima bantuan perangkat digitalisasi pembelajaran",doc:"Foto penerimaan atau bukti serah terima barang"},
@@ -190,7 +231,7 @@ const modules = [
   },
   {
     id:"dapodik", label:"C", title:"Pelaporan Pemantauan Kualitas Data Dapodik 2026",
-    pctLabel:"Prosentase (80-100%)", color:"#8B5CF6", icon:"fa-database",
+    pctLabel:"Prosentase", pctMin:80, pctMax:100, color:"#8B5CF6", icon:"fa-database",
     driveNote:"Indikator 1-25 berisi foto screenshot dari aplikasi Dapodik dibuat 1 folder dikirim ke Google Drive link nya simpan di kolom bawah.",
     indicators:[
       {title:"Data bangunan telah lengkap diinput di Dapodik",desc:"Kelengkapan data bangunan yang telah diinput di Dapodik",doc:""},
@@ -222,7 +263,7 @@ const modules = [
   },
   {
     id:"spmi", label:"D", title:"Pelaporan Sistem Penjaminan Mutu Internal Tahun 2026",
-    pctLabel:"Prosentase (80-100%)", color:"#F59E0B", icon:"fa-shield-halved",
+    pctLabel:"Prosentase", pctMin:80, pctMax:100, color:"#F59E0B", icon:"fa-shield-halved",
     driveNote:"Dokumen SK Tim SPMI, Peta Mutu, RKT, dll. dibuat 1 folder di Google Drive.",
     indicators:[
       {title:"Tim Penjaminan Mutu Satuan Pendidikan",desc:"Sekolah sudah menetapkan tim SPMI",doc:"SK Tim SPMI di foto"},
@@ -235,7 +276,7 @@ const modules = [
   },
   {
     id:"pmb", label:"E", title:"Pelaporan Kesiapan Data Untuk Analisis Daya Tampung Penerimaan Murid Baru 2026",
-    pctLabel:"Nilai (0-100)", color:"#EC4899", icon:"fa-users",
+    pctLabel:"Nilai", pctMin:0, pctMax:100, color:"#EC4899", icon:"fa-users",
     driveNote:"Dokumen bukti analisis daya tampung dibuat 1 folder di Google Drive.",
     indicators:[
       {title:"Satdik melakukan analisis daya tampung siswa per rombongan belajar",desc:"Jumlah daya tampung siswa per rombongan belajar",doc:""},
@@ -250,6 +291,8 @@ let currentTab = 0;
 let formData = {};
 let sdnName = "";
 let sdnTimer = null;
+// State untuk modal numpad persentase
+let pctModalState = { mid: "", idx: -1, value: "" };
 
 // Inisialisasi data
 modules.forEach(m => {
@@ -286,14 +329,149 @@ function showToast(msg, type="success"){
   setTimeout(()=>{t.style.transition="opacity .4s,transform .4s";t.style.opacity="0";t.style.transform="translateX(60px)";setTimeout(()=>t.remove(),400)},4000);
 }
 
-// ==================== MODAL ====================
+// ==================== MODAL KONFIRMASI ====================
 function showModal(html){const m=document.getElementById("confirmModal");document.getElementById("modalContent").innerHTML=html;m.classList.add("show");}
 function closeModal(){document.getElementById("confirmModal").classList.remove("show");}
+
+// ==================== MODAL NUMPAD PERSENTASE ====================
+function openPctModal(mid, idx) {
+  pctModalState = { mid, idx, value: formData[mid].indicators[idx].percent || "" };
+  renderPctModal();
+  document.getElementById("pctModal").classList.add("show");
+  // Fokus ke input setelah render
+  setTimeout(() => {
+    const inp = document.getElementById("pctModalInput");
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function closePctModal() {
+  document.getElementById("pctModal").classList.remove("show");
+}
+
+function renderPctModal() {
+  const { mid, idx, value } = pctModalState;
+  const m = modules.find(x => x.id === mid);
+  const ind = m.indicators[idx];
+  // Potong judul jika terlalu panjang
+  const shortTitle = ind.title.length > 45 ? ind.title.substring(0, 45) + "..." : ind.title;
+
+  document.getElementById("pctModalContent").innerHTML = `
+    <div class="text-center mb-3">
+      <div class="text-xs font-bold mb-1" style="color:${m.color}">${m.label} - Indikator ${idx + 1}</div>
+      <div class="text-sm font-semibold" style="color:var(--fg)">${shortTitle}</div>
+      <div class="text-xs mt-1" style="color:var(--muted)">${m.pctLabel} (${m.pctMin}-${m.pctMax})</div>
+    </div>
+    <div style="position:relative;display:flex;align-items:center;gap:4px;justify-content:center">
+      <input type="text" id="pctModalInput" class="pct-modal-input" value="${value}" 
+        oninput="onPctModalInput(this.value)" onkeydown="onPctModalKey(event)"
+        inputmode="numeric" maxlength="3" autocomplete="off">
+      <span style="font-size:24px;font-weight:800;color:var(--accent)">%</span>
+    </div>
+    <div class="pct-modal-numpad">
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('1')">1</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('2')">2</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('3')">3</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('4')">4</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('5')">5</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('6')">6</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('7')">7</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('8')">8</button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('9')">9</button>
+      <button class="pct-numpad-btn danger-btn" onclick="pctNumpadPress('C')"><i class="fas fa-delete-left"></i></button>
+      <button class="pct-numpad-btn" onclick="pctNumpadPress('0')">0</button>
+      <button class="pct-numpad-btn accent-btn" onclick="pctNumpadPress('OK')"><i class="fas fa-check"></i></button>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(${m.pctMin})">${m.pctMin}%</button>
+      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(${Math.round((m.pctMin+m.pctMax)/2)})">${Math.round((m.pctMin+m.pctMax)/2)}%</button>
+      <button class="btn-secondary flex-1 justify-center text-xs" onclick="pctQuickSet(${m.pctMax})">${m.pctMax}%</button>
+      <button class="btn-secondary flex-1 justify-center text-xs danger-btn" onclick="pctQuickSet(0)" style="color:var(--red);border-color:rgba(239,68,68,.3)">Hapus</button>
+    </div>
+  `;
+}
+
+function onPctModalInput(val) {
+  // Hanya izinkan angka
+  pctModalState.value = val.replace(/[^0-9]/g, "");
+  const inp = document.getElementById("pctModalInput");
+  if (inp) {
+    inp.value = pctModalState.value;
+    // Pindahkan kursor ke akhir
+    inp.setSelectionRange(pctModalState.value.length, pctModalState.value.length);
+  }
+}
+
+function onPctModalKey(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    pctNumpadPress("OK");
+  } else if (e.key === "Escape") {
+    closePctModal();
+  }
+}
+
+function pctNumpadPress(key) {
+  if (key === "C") {
+    // Hapus karakter terakhir
+    pctModalState.value = pctModalState.value.slice(0, -1);
+  } else if (key === "OK") {
+    // Simpan dan tutup
+    pctApplyValue();
+    return;
+  } else {
+    // Angka, tambahkan jika belum 3 digit
+    if (pctModalState.value.length < 3) {
+      pctModalState.value += key;
+    }
+  }
+  const inp = document.getElementById("pctModalInput");
+  if (inp) {
+    inp.value = pctModalState.value;
+    inp.focus();
+    inp.setSelectionRange(pctModalState.value.length, pctModalState.value.length);
+  }
+}
+
+function pctQuickSet(val) {
+  pctModalState.value = val === 0 ? "" : String(val);
+  const inp = document.getElementById("pctModalInput");
+  if (inp) {
+    inp.value = pctModalState.value;
+    inp.focus();
+  }
+  // Jika bukan hapus (0), langsung apply
+  if (val !== 0) {
+    pctApplyValue();
+  }
+}
+
+function pctApplyValue() {
+  const { mid, idx, value } = pctModalState;
+  let numVal = parseInt(value) || 0;
+  // Clamp ke rentang yang valid
+  const m = modules.find(x => x.id === mid);
+  if (numVal > 100) numVal = 100;
+  if (numVal > 0 && numVal < m.pctMin) numVal = m.pctMin;
+
+  formData[mid].indicators[idx].percent = numVal > 0 ? String(numVal) : "";
+  closePctModal();
+  renderTab();
+}
 
 // ==================== PROGRESS RING ====================
 function ringSVG(pct,color,sz=52){
   const r=(sz-8)/2,circ=2*Math.PI*r,offset=circ-(Math.max(0,Math.min(100,pct||0))/100)*circ;
   return `<svg width="${sz}" height="${sz}" class="progress-ring"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke-width="4" class="progress-ring-bg"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke-width="4" stroke="${color}" class="progress-ring-fill" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/><text x="${sz/2}" y="${sz/2}" text-anchor="middle" dominant-baseline="central" fill="${color}" font-size="11" font-weight="800" style="transform:rotate(90deg);transform-origin:center">${pct||0}%</text></svg>`;
+}
+
+// ==================== SLIDER HELPER ====================
+function updateSliderBg(slider, color) {
+  const val = slider.value || 0;
+  const min = parseInt(slider.min) || 0;
+  const max = parseInt(slider.max) || 100;
+  const pct = ((val - min) / (max - min)) * 100;
+  slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${pct}%, var(--border) ${pct}%, var(--border) 100%)`;
 }
 
 // ==================== TAB SWITCHING ====================
@@ -303,33 +481,62 @@ function switchTab(i){
   renderTab();
 }
 
+// ==================== PRESET BUTTONS UNTUK MODUL ====================
+function getPresetValues(m) {
+  if (m.pctMin === 60) return [60, 70, 80, 90, 100];
+  if (m.pctMin === 80) return [80, 85, 90, 95, 100];
+  return [0, 25, 50, 75, 100]; // Modul E (0-100)
+}
+
 // ==================== RENDER ====================
 function renderTab(){
   const m=modules[currentTab];
   const d=formData[m.id];
+  const presets = getPresetValues(m);
 
   // Baris tabel
   const rows=m.indicators.map((ind,i)=>{
     const st=d.indicators[i].status;
-    const pc=d.indicators[i].percent;
+    const pc=parseInt(d.indicators[i].percent)||0;
+    const pcStr=d.indicators[i].percent||"";
+    const isActive = pcStr !== "";
+    // Warna berdasarkan nilai
+    let pctColor = "var(--muted)";
+    if (isActive) {
+      if (pc >= m.pctMax) pctColor = "var(--green)";
+      else if (pc >= m.pctMin) pctColor = m.color;
+      else pctColor = "var(--red)";
+    }
+
+    // Preset buttons
+    const presetBtns = presets.map(v => 
+      `<button class="pct-preset ${pcStr === String(v) ? 'active' : ''}" onclick="setPctQuick('${m.id}',${i},${v})">${v}</button>`
+    ).join("");
+
     return `<tr>
       <td style="text-align:center;font-weight:700;color:var(--muted);width:35px">${i+1}</td>
-      <td style="min-width:200px">
+      <td style="min-width:180px">
         <div class="ind-title">${ind.title}</div>
         ${ind.desc?`<div class="ind-desc">${ind.desc}</div>`:""}
       </td>
-      <td style="min-width:110px">
+      <td style="min-width:100px">
         <select class="input-field status-select" onchange="updInd('${m.id}',${i},'status',this.value)">
           <option value="" ${!st?"selected":""}>-- Pilih --</option>
           <option value="Sudah" ${st==="Sudah"?"selected":""}>Sudah</option>
           <option value="Belum" ${st==="Belum"?"selected":""}>Belum</option>
         </select>
       </td>
-      <td style="min-width:90px">
-        <input type="number" class="input-field pct-input" placeholder="%" value="${pc}" oninput="updInd('${m.id}',${i},'percent',this.value)">
+      <td style="min-width:140px">
+        <div class="pct-cell">
+          <div class="pct-display" style="color:${pctColor}" onclick="openPctModal('${m.id}',${i})" title="Klik untuk input persentase">${pcStr || "—"}</div>
+          <input type="range" class="pct-slider" min="${m.pctMin}" max="${m.pctMax}" step="1" value="${isActive ? pc : m.pctMin}" 
+            oninput="onSliderChange('${m.id}',${i},this.value,${m.pctMin},${m.pctMax},'${m.color}')"
+            onload="updateSliderBg(this,'${m.color}')">
+          <div class="pct-presets">${presetBtns}</div>
+        </div>
       </td>
-      <td style="width:60px;text-align:center">${pc?ringSVG(parseInt(pc),m.color,48):'<span style="color:var(--border);font-size:18px">-</span>'}</td>
-      <td style="min-width:140px;font-size:11px;color:var(--muted)">${ind.doc||"-"}</td>
+      <td style="width:55px;text-align:center">${isActive ? ringSVG(pc,m.color,46) : '<span style="color:var(--border);font-size:18px">—</span>'}</td>
+      <td style="min-width:120px;font-size:11px;color:var(--muted)">${ind.doc||"-"}</td>
     </tr>`;
   }).join("");
 
@@ -350,6 +557,7 @@ function renderTab(){
       <div>
         <div class="text-xs font-bold mb-0.5" style="color:${m.color}">${m.label}. Indikator Program</div>
         <h2 class="text-base font-bold leading-tight">${m.title}</h2>
+        <div class="text-xs mt-1" style="color:var(--muted)">Rentang ${m.pctLabel}: <strong style="color:${m.color}">${m.pctMin}% — ${m.pctMax}%</strong></div>
       </div>
     </div>
 
@@ -370,9 +578,9 @@ function renderTab(){
         <thead><tr>
           <th style="width:35px">No</th>
           <th>Indikator</th>
-          <th>Status Ketercapaian<br>(Sudah/Belum)</th>
-          <th>${m.pctLabel}</th>
-          <th style="width:60px;text-align:center">Progress</th>
+          <th>Status</th>
+          <th>${m.pctLabel} (${m.pctMin}-${m.pctMax})</th>
+          <th style="width:55px;text-align:center"><i class="fas fa-chart-pie" style="font-size:10px"></i></th>
           <th>Dokumen</th>
         </tr></thead>
         <tbody>${rows}</tbody>
@@ -402,12 +610,61 @@ function renderTab(){
       <button class="btn-secondary" onclick="resetMod('${m.id}')"><i class="fas fa-rotate-left"></i> Reset</button>
     </div>
   </div>`;
+
+  // Inisialisasi slider background setelah render
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.pct-slider').forEach(slider => {
+      updateSliderBg(slider, m.color);
+    });
+  });
+}
+
+// ==================== SLIDER CHANGE HANDLER ====================
+function onSliderChange(mid, idx, val, min, max, color) {
+  const numVal = parseInt(val);
+  formData[mid].indicators[idx].percent = String(numVal);
+  // Update slider background
+  const slider = event.target;
+  updateSliderBg(slider, color);
+  // Update tampilan angka dan ring tanpa re-render penuh
+  const row = slider.closest('tr');
+  if (row) {
+    const display = row.querySelector('.pct-display');
+    const ringCell = row.querySelector('td:last-of-type');
+    if (display) {
+      let pctColor = "var(--muted)";
+      if (numVal >= max) pctColor = "var(--green)";
+      else if (numVal >= min) pctColor = color;
+      else pctColor = "var(--red)";
+      display.style.color = pctColor;
+      display.textContent = numVal;
+    }
+    if (ringCell) {
+      ringCell.innerHTML = ringSVG(numVal, color, 46);
+    }
+    // Update preset buttons active state
+    const presets = row.querySelectorAll('.pct-preset');
+    presets.forEach(btn => {
+      btn.classList.toggle('active', btn.textContent === String(numVal));
+    });
+  }
+}
+
+// ==================== PRESET QUICK SET ====================
+function setPctQuick(mid, idx, val) {
+  formData[mid].indicators[idx].percent = String(val);
+  renderTab();
 }
 
 // ==================== UPDATE FIELD ====================
 function updInd(mid,i,field,val){
   formData[mid].indicators[i][field]=val;
-  if(field==="percent") renderTab();
+  // Jika status diubah ke "Sudah" dan persentase kosong, auto-fill persentase minimum
+  if (field === "status" && val === "Sudah" && !formData[mid].indicators[i].percent) {
+    const m = modules.find(x => x.id === mid);
+    formData[mid].indicators[i].percent = String(m.pctMin);
+    renderTab();
+  }
 }
 function updDrive(mid,val){
   formData[mid].driveLink=val;
@@ -419,8 +676,9 @@ function updDrive(mid,val){
 function debounceSDN(){clearTimeout(sdnTimer);sdnTimer=setTimeout(()=>{sdnName=document.getElementById("sdnName").value.trim();localStorage.setItem("jba_sdn",sdnName)},400)}
 
 function fillAll(mid){
-  formData[mid].indicators.forEach(x=>{if(!x.status)x.status="Sudah";if(!x.percent)x.percent="80"});
-  renderTab();showToast("Semua indikator diisi 'Sudah'","info");
+  const m = modules.find(x => x.id === mid);
+  formData[mid].indicators.forEach(x=>{if(!x.status)x.status="Sudah";if(!x.percent)x.percent=String(m.pctMin)});
+  renderTab();showToast("Semua indikator diisi 'Sudah' dengan persentase minimum","info");
 }
 function resetMod(mid){
   const m=modules.find(x=>x.id===mid);
@@ -449,7 +707,14 @@ function showGuide(){
       <ol style="padding-left:18px;list-style:decimal;space-y:4px">
         <li>Masukkan Nama SDN, klik <strong style="color:var(--fg)">Muat Data</strong></li>
         <li>Pilih tab A/B/C/D/E untuk modul pelaporan</li>
-        <li>Isi Status (Sudah/Belum) dan Prosentase setiap indikator</li>
+        <li>Isi Status (Sudah/Belum) — jika pilih "Sudah", persentase otomatis terisi minimum</li>
+        <li>Isi Persentase dengan 3 cara:
+          <ul style="padding-left:16px;list-style:disc;margin-top:4px">
+            <li><strong style="color:var(--fg)">Geser slider</strong> untuk cepat menyesuaikan</li>
+            <li><strong style="color:var(--fg)">Klik tombol preset</strong> (60, 70, 80, 90, 100)</li>
+            <li><strong style="color:var(--fg)">Klik angka besar</strong> untuk membuka numpad input</li>
+          </ul>
+        </li>
         <li>Upload bukti fisik ke Google Drive, paste link-nya</li>
         <li>Tulis Gambaran Umum</li>
         <li>Klik <strong style="color:var(--fg)">Simpan ke Database</strong></li>
@@ -520,12 +785,10 @@ function loadData(){
       return;
     }
 
-    // Muat setiap modul yang ada di database
     modules.forEach(m=>{
       if(data[m.id]){
         const saved=data[m.id];
         const inds=saved.indicators||[];
-        // Pastikan array indikator cukup panjang (tambahkan jika kurang)
         const newInds=m.indicators.map((_,i)=>{
           if(i<inds.length) return {status:inds[i].status||"",percent:inds[i].percent||""};
           return {status:"",percent:""};
@@ -584,6 +847,14 @@ function printReport(){
   <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
 }
+
+// ==================== KLIK DI LUAR MODAL UNTUK TUTUP ====================
+document.getElementById("pctModal").addEventListener("click", function(e) {
+  if (e.target === this) closePctModal();
+});
+document.getElementById("confirmModal").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});
 
 // ==================== INISIALISASI ====================
 window.addEventListener("DOMContentLoaded",()=>{
