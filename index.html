@@ -167,11 +167,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// SEMUA MODUL MENGGUNAKAN RENTANG 0 - 100
 const modules = [
   {
     id:"ppk", label:"A", title:"Pelaporan Implementasi Penguatan Pendidikan Karakter melalui Pembiasaan di Satuan Pendidikan",
-    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#D4A017", icon:"fa-heart",
+    pctLabel:"Prosentase", pctMin:60, pctMax:100, color:"#D4A017", icon:"fa-heart",
     driveNote:"Indikator 1 s/d 21 berisi foto-foto dibuat 1 folder dan simpan di Google Drive sekolah share linknya dan simpan di kolom link di bawah!",
     indicators:[
       {title:"Siswa melaksanakan pembiasaan bangun pagi",desc:"Siswa yang menerapkan 7 Kebiasaan Anak Indonesia Hebat melalui pembiasaan bangun pagi",doc:""},
@@ -199,7 +198,7 @@ const modules = [
   },
   {
     id:"digital", label:"B", title:"Pelaporan Digitalisasi Pembelajaran di Satuan Pendidikan",
-    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#14B8A6", icon:"fa-laptop",
+    pctLabel:"Prosentase", pctMin:60, pctMax:100, color:"#14B8A6", icon:"fa-laptop",
     driveNote:"Indicator 1-11 dibuat folder disimpen di Google Drive share ke sini.",
     indicators:[
       {title:"Penerimaan bantuan perangkat digitalisasi pembelajaran",desc:"Sekolah telah menerima bantuan perangkat digitalisasi pembelajaran",doc:"Foto penerimaan atau bukti serah terima barang"},
@@ -217,7 +216,7 @@ const modules = [
   },
   {
     id:"dapodik", label:"C", title:"Pelaporan Pemantauan Kualitas Data Dapodik 2026",
-    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#8B5CF6", icon:"fa-database",
+    pctLabel:"Prosentase", pctMin:60, pctMax:100, color:"#8B5CF6", icon:"fa-database",
     driveNote:"Indikator 1-25 berisi foto screenshot dari aplikasi Dapodik dibuat 1 folder dikirim ke Google Drive link nya simpan di kolom bawah.",
     indicators:[
       {title:"Data bangunan telah lengkap diinput di Dapodik",desc:"Kelengkapan data bangunan yang telah diinput di Dapodik",doc:""},
@@ -249,7 +248,7 @@ const modules = [
   },
   {
     id:"spmi", label:"D", title:"Pelaporan Sistem Penjaminan Mutu Internal Tahun 2026",
-    pctLabel:"Prosentase", pctMin:0, pctMax:100, color:"#F59E0B", icon:"fa-shield-halved",
+    pctLabel:"Prosentase", pctMin:60, pctMax:100, color:"#F59E0B", icon:"fa-shield-halved",
     driveNote:"Dokumen SK Tim SPMI, Peta Mutu, RKT, dll. dibuat 1 folder di Google Drive.",
     indicators:[
       {title:"Tim Penjaminan Mutu Satuan Pendidikan",desc:"Sekolah sudah menetapkan tim SPMI",doc:"SK Tim SPMI di foto"},
@@ -262,7 +261,7 @@ const modules = [
   },
   {
     id:"pmb", label:"E", title:"Pelaporan Kesiapan Data Untuk Analisis Daya Tampung Penerimaan Murid Baru 2026",
-    pctLabel:"Nilai", pctMin:0, pctMax:100, color:"#EC4899", icon:"fa-users",
+    pctLabel:"Nilai", pctMin:60, pctMax:100, color:"#EC4899", icon:"fa-users",
     driveNote:"Dokumen bukti analisis daya tampung dibuat 1 folder di Google Drive.",
     indicators:[
       {title:"Satdik melakukan analisis daya tampung siswa per rombongan belajar",desc:"Jumlah daya tampung siswa per rombongan belajar",doc:""},
@@ -355,7 +354,7 @@ function renderPctModal() {
     <div class="text-center mb-3">
       <div class="text-xs font-bold mb-1" style="color:${m.color}">${m.label} - Indikator ${idx + 1}</div>
       <div class="text-sm font-semibold" style="color:var(--fg)">${shortTitle}</div>
-      <div class="text-xs mt-1" style="color:var(--muted)">Rentang: 0% — 100%</div>
+      <div class="text-xs mt-1" style="color:var(--muted)">Rentang: 0% — 100% (Min ${m.pctMin}%)</div>
     </div>
     <div style="display:flex;align-items:center;gap:4px;justify-content:center">
       <input type="text" id="pctModalInput" class="pct-modal-input" value="${value}" 
@@ -429,9 +428,9 @@ function switchTab(i){
   renderTab();
 }
 
-// KARENA SEMUA MODUL 0-100, PRESET JUGA DISAMAKAN
+// PRESET TOMBOL CEPAT DI BAWAH SLIDER (60, 70, 80, 90, 100)
 function getPresetValues(m) {
-  return [0, 25, 50, 75, 100];
+  return [60, 70, 80, 90, 100];
 }
 
 // ==================== RENDER ====================
@@ -445,12 +444,14 @@ function renderTab(){
     const pc=parseInt(d.indicators[i].percent)||0;
     const pcStr=d.indicators[i].percent||"";
     const isActive = pcStr !== "";
+    
+    // WARNA ANGKA PERSENTASE: < 60 MERAH, 60-100 WARNA MODUL
     let pctColor = "var(--muted)";
     if (isActive) {
-      if (pc >= 100) pctColor = "var(--green)"; // 100 = Hijau (Tercapai penuh)
-      else if (pc >= 1) pctColor = m.color;    // 1-99 = Warna Modul (Proses)
-      else pctColor = "var(--red)";            // 0 = Merah (Belum sama sekali)
+      if (pc >= m.pctMin) pctColor = m.color; // Tercapai (60-100)
+      else pctColor = "var(--red)";           // Belum Tercapai (<60)
     }
+    
     const presetBtns = presets.map(v => 
       `<button class="pct-preset ${pcStr === String(v) ? 'active' : ''}" onclick="updatePctValue('${m.id}',${i},${v})">${v}</button>`
     ).join("");
@@ -483,10 +484,10 @@ function renderTab(){
   }).join("");
 
   const total = m.indicators.length;
-  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= 100).length;
+  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= m.pctMin).length;
   const belum = d.indicators.filter(x => {
     if (x.status === "Belum") return true;
-    if (x.status === "Sudah") { return (parseInt(x.percent) || 0) < 100; }
+    if (x.status === "Sudah") { return (parseInt(x.percent) || 0) < m.pctMin; }
     return false;
   }).length;
   const belumPilih = d.indicators.filter(x => !x.status).length;
@@ -502,7 +503,7 @@ function renderTab(){
       <div>
         <div class="text-xs font-bold mb-0.5" style="color:${m.color}">${m.label}. Indikator Program</div>
         <h2 class="text-base font-bold leading-tight">${m.title}</h2>
-        <div class="text-xs mt-1" style="color:var(--muted)">Rentang ${m.pctLabel}: <strong style="color:${m.color}">0% — 100%</strong></div>
+        <div class="text-xs mt-1" style="color:var(--muted)">Rentang ${m.pctLabel}: <strong style="color:${m.color}">${m.pctMin}% — 100%</strong> (Di bawah ${m.pctMin}% dianggap belum tercapai)</div>
       </div>
     </div>
 
@@ -613,7 +614,8 @@ function showGuide(){
 }</pre>
       <p>Klik <strong style="color:var(--fg)">Publish</strong>.</p>
       <hr style="border-color:var(--border);margin:12px 0">
-      <p><strong style="color:var(--fg)">Input Persentase:</strong> Geser slider (0-100), klik tombol preset, atau klik angka besar untuk numpad. Semua modul (A-E) menggunakan rentang 0% - 100%.</p>
+      <p><strong style="color:var(--fg)">Input Persentase:</strong> Geser slider (0-100), klik tombol preset, atau klik angka besar untuk numpad.</p>
+      <p><strong style="color:var(--fg)">Batas Tercapai:</strong> Nilai 60% - 100% dihitung Tercapai. Di bawah 60% dihitung Belum Tercapai.</p>
       <p><strong style="color:var(--fg)">Cetak:</strong> "Cetak Modul Ini" untuk modul aktif saja. "Cetak Semua Modul" untuk mencetak A sampai E sekaligus, masing-masing modul otomatis dimulai di halaman baru.</p>
     </div>
     <div class="flex justify-end mt-5"><button class="btn-primary text-sm" onclick="closeModal()">Mengerti</button></div>
@@ -772,10 +774,10 @@ const printCSS = `
 // ==================== GENERATE HTML UNTUK 1 MODUL ====================
 function generateModuleHTML(m, d, sdn, isFirstPage) {
   const total = m.indicators.length;
-  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= 100).length;
+  const sudah = d.indicators.filter(x => x.status === "Sudah" && x.percent !== "" && parseInt(x.percent) >= m.pctMin).length;
   const belum = d.indicators.filter(x => {
     if (x.status === "Belum") return true;
-    if (x.status === "Sudah") { return (parseInt(x.percent) || 0) < 100; }
+    if (x.status === "Sudah") { return (parseInt(x.percent) || 0) < m.pctMin; }
     return false;
   }).length;
   const filledPct = d.indicators.filter(x => x.percent !== "").length;
