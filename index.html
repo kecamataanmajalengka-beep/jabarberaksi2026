@@ -614,7 +614,7 @@ function showGuide(){
       <p>Klik <strong style="color:var(--fg)">Publish</strong>.</p>
       <hr style="border-color:var(--border);margin:12px 0">
       <p><strong style="color:var(--fg)">Input Persentase:</strong> Geser slider (0-100), klik tombol preset, atau klik angka besar untuk numpad.</p>
-      <p><strong style="color:var(--fg)">Cetak:</strong> "Cetak Modul Ini" untuk modul aktif saja. "Cetak Semua Modul" untuk mencetak A sampai E sekaligus, masing-masing modul otomatis dimulai di halaman baru.</p>
+      <p><strong style="color:var(--fg)">Cetak:</strong> "Cetak Modul Ini" untuk modul aktif saja. "Cetak Semua Modul" untuk mencetak A sampai E sekaligus, masing-masing modul otomatis dimulai di halaman baru (kertas A4 Portrait).</p>
     </div>
     <div class="flex justify-end mt-5"><button class="btn-primary text-sm" onclick="closeModal()">Mengerti</button></div>
   </div>`);
@@ -684,88 +684,81 @@ function loadData(){
   });
 }
 
-// ==================== CSS PRINT YANG RAPI ====================
+// ==================== CSS PRINT A4 PORTRAIT — RAPI & TIDAK TERPOTONG ====================
 const printCSS = `
 <style>
   @page {
-    size: A4 landscape;
-    margin: 12mm 10mm;
+    size: A4 portrait;
+    margin: 10mm 8mm;
   }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body {
     font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
     padding: 0; margin: 0;
-    color: #111; font-size: 10px;
+    color: #111; font-size: 8.5pt;
     -webkit-text-size-adjust: 100%;
   }
   .print-header {
-    text-align: center; margin-bottom: 10px;
-    border-bottom: 2px solid #D4A017; padding-bottom: 8px;
+    text-align: center; margin-bottom: 6px;
+    border-bottom: 2px solid #D4A017; padding-bottom: 5px;
   }
-  .print-header h1 { font-size: 16px; margin: 0 0 2px 0; color: #111; }
-  .print-header h2 { font-size: 11px; margin: 0 0 4px 0; color: #555; font-weight: normal; }
-  .print-sdn { font-size: 11px; margin: 0 0 6px 0; }
+  .print-header h1 { font-size: 13pt; margin: 0 0 1px 0; color: #111; }
+  .print-header h2 { font-size: 8pt; margin: 0 0 3px 0; color: #555; font-weight: normal; }
+  .print-sdn { font-size: 9pt; margin: 0 0 4px 0; }
   .print-sdn strong { color: #111; }
-  .mod-section {
-    margin-bottom: 0;
-    page-break-inside: avoid;
-  }
-  .mod-section-new-page {
-    page-break-before: always;
-    margin-top: 0;
-  }
+  .mod-section { margin-bottom: 0; }
+  .mod-section-new-page { page-break-before: always; margin-top: 0; }
   .mod-title {
-    font-size: 12px; font-weight: 700; margin: 12px 0 6px 0;
-    border-bottom: 2px solid #D4A017; padding-bottom: 4px; color: #111;
+    font-size: 9pt; font-weight: 700; margin: 8px 0 4px 0;
+    border-bottom: 1.5px solid #D4A017; padding-bottom: 3px; color: #111;
   }
   .mod-stats {
-    display: flex; gap: 12px; margin-bottom: 6px; font-size: 10px;
+    display: flex; gap: 8px; margin-bottom: 4px; font-size: 8pt;
   }
   .mod-stat {
-    background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;
-    padding: 4px 10px; text-align: center;
+    background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px;
+    padding: 2px 8px; text-align: center;
   }
-  .mod-stat .val { font-size: 14px; font-weight: 800; color: #111; }
-  .mod-stat .lbl { font-size: 9px; color: #555; }
+  .mod-stat .val { font-size: 12pt; font-weight: 800; color: #111; }
+  .mod-stat .lbl { font-size: 7pt; color: #555; }
   table {
-    width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 9.5px;
-    table-layout: fixed;
+    width: 100%; border-collapse: collapse; margin-bottom: 5px;
+    font-size: 7.5pt; table-layout: fixed;
   }
   th {
     background: #D4A017 !important; color: #000 !important;
-    padding: 5px 6px; font-size: 9px; font-weight: 700;
+    padding: 3px 4px; font-size: 7pt; font-weight: 700;
     text-align: left; border: 1px solid #B8860B;
-    text-transform: uppercase; letter-spacing: 0.3px;
+    text-transform: uppercase; letter-spacing: 0.2px;
   }
   td {
-    padding: 4px 6px; border: 1px solid #bbb;
+    padding: 2px 4px; border: 0.5px solid #bbb;
     vertical-align: top; word-wrap: break-word; overflow-wrap: break-word;
   }
-  td.col-no { width: 28px; text-align: center; }
-  td.col-status { width: 60px; text-align: center; font-weight: 700; }
-  td.col-pct { width: 50px; text-align: center; }
-  td.col-doc { width: 110px; font-size: 8.5px; color: #555; }
-  td.col-ind { }
+  td.col-no { width: 22px; text-align: center; font-size: 7pt; }
+  td.col-status { width: 45px; text-align: center; font-weight: 700; font-size: 7pt; }
+  td.col-pct { width: 35px; text-align: center; font-size: 7pt; }
+  td.col-doc { width: 80px; font-size: 6.5pt; color: #555; }
   .status-sudah { color: green; }
   .status-belum { color: red; }
-  .ind-name { font-weight: 600; line-height: 1.3; }
-  .ind-desc { font-size: 8.5px; color: #555; font-style: italic; margin-top: 1px; line-height: 1.3; }
+  .ind-name { font-weight: 600; line-height: 1.25; font-size: 7.5pt; }
+  .ind-desc { font-size: 6.5pt; color: #555; font-style: italic; margin-top: 1px; line-height: 1.2; }
   .overview-block {
-    margin: 8px 0 4px 0; padding: 8px 10px;
-    background: #fafafa; border: 1px solid #ddd; border-radius: 4px;
-    text-align: justify; font-size: 10px; line-height: 1.5;
+    margin: 5px 0 3px 0; padding: 5px 7px;
+    background: #fafafa; border: 1px solid #ddd; border-radius: 3px;
+    text-align: justify; font-size: 8pt; line-height: 1.4;
   }
-  .overview-label { font-weight: 700; font-size: 10px; margin-bottom: 3px; color: #333; }
-  .drive-block { margin: 4px 0 12px 0; font-size: 9.5px; word-break: break-all; }
-  .drive-label { font-weight: 700; font-size: 10px; color: #333; }
+  .overview-label { font-weight: 700; font-size: 8pt; margin-bottom: 2px; color: #333; }
+  .drive-block { margin: 3px 0 8px 0; font-size: 7pt; word-break: break-all; }
+  .drive-label { font-weight: 700; font-size: 7.5pt; color: #333; }
   .print-footer {
-    margin-top: 16px; padding-top: 6px; border-top: 1px solid #ddd;
-    text-align: center; font-size: 9px; color: #888;
+    margin-top: 10px; padding-top: 4px; border-top: 1px solid #ddd;
+    text-align: center; font-size: 7pt; color: #888;
   }
   /* CEGAH BARIS TERPOTONG DI TENGAH HALAMAN */
   tr { page-break-inside: avoid; }
   thead { display: table-header-group; }
-  .no-data { text-align: center; color: #999; font-style: italic; padding: 12px; }
+  .no-data { text-align: center; color: #999; font-style: italic; padding: 10px; font-size: 8pt; }
 </style>`;
 
 // ==================== GENERATE HTML UNTUK 1 MODUL ====================
@@ -782,7 +775,6 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
   const hasData = d.indicators.some(x => x.status || x.percent);
 
   let html = '';
-  // Header hanya di halaman pertama
   if (isFirstPage) {
     html += `<div class="print-header">
       <h1>JABAR BERAKSI 2026</h1>
@@ -805,11 +797,11 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
   } else {
     html += `<table>
       <thead><tr>
-        <th style="width:28px">No</th>
+        <th style="width:22px">No</th>
         <th>Indikator</th>
-        <th style="width:60px;text-align:center">Status</th>
-        <th style="width:50px;text-align:center">${m.pctLabel}</th>
-        <th style="width:110px">Dokumen</th>
+        <th style="width:45px;text-align:center">Status</th>
+        <th style="width:35px;text-align:center">${m.pctLabel}</th>
+        <th style="width:80px">Dokumen</th>
       </tr></thead><tbody>`;
 
     m.indicators.forEach((ind, i) => {
@@ -818,7 +810,7 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
       const stClass = st === "Sudah" ? "status-sudah" : (st === "Belum" ? "status-belum" : "");
       html += `<tr>
         <td class="col-no">${i + 1}</td>
-        <td class="col-ind">
+        <td>
           <div class="ind-name">${ind.title}</div>
           ${ind.desc ? `<div class="ind-desc">${ind.desc}</div>` : ""}
         </td>
@@ -830,7 +822,6 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
 
     html += `</tbody></table>`;
 
-    // Gambaran Umum — rata kiri-kanan
     if (d.overview) {
       html += `<div class="overview-block">
         <div class="overview-label">Gambaran Umum Pelaksanaan Program ${m.title} di Satuan Pendidikan:</div>
@@ -838,7 +829,6 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
       </div>`;
     }
 
-    // Link Drive
     if (d.driveLink) {
       html += `<div class="drive-block">
         <span class="drive-label">Link Google Drive:</span> ${d.driveLink}
@@ -846,7 +836,7 @@ function generateModuleHTML(m, d, sdn, isFirstPage) {
     }
   }
 
-  html += `</div>`; // tutup mod-section
+  html += `</div>`;
   return html;
 }
 
@@ -855,10 +845,8 @@ function printReport() {
   const m = modules[currentTab];
   const d = formData[m.id];
   const sdn = sdnName || "................................";
-
   const bodyContent = generateModuleHTML(m, d, sdn, true);
   const footer = `<div class="print-footer">Dicetak: ${new Date().toLocaleDateString("id-ID",{weekday:"long",year:"numeric",month:"long",day:"numeric"})} | JABAR BERAKSI 2026</div>`;
-
   const w = window.open("", "_blank");
   w.document.write(`<!DOCTYPE html><html><head><title>Cetak ${m.label} - ${sdn}</title>${printCSS}</head><body>${bodyContent}${footer}<script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
@@ -872,21 +860,16 @@ function printAllModules() {
     document.getElementById("sdnName").focus();
     return;
   }
-
-  // Cek apakah ada data di minimal 1 modul
   const anyData = modules.some(m => formData[m.id].indicators.some(x => x.status || x.percent));
   if (!anyData) {
     showToast("Tidak ada data sama sekali. Isi dan simpan data terlebih dahulu!", "error");
     return;
   }
-
   let allHTML = '';
   modules.forEach((m, i) => {
     allHTML += generateModuleHTML(m, formData[m.id], sdnName, i === 0);
   });
-
   const footer = `<div class="print-footer">Dicetak: ${new Date().toLocaleDateString("id-ID",{weekday:"long",year:"numeric",month:"long",day:"numeric"})} | JABAR BERAKSI 2026 - ${sdnName}</div>`;
-
   const w = window.open("", "_blank");
   w.document.write(`<!DOCTYPE html><html><head><title>Cetak Semua Modul - ${sdnName}</title>${printCSS}</head><body>${allHTML}${footer}<script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
